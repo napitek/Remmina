@@ -40,22 +40,17 @@
  * Remmina Perference Loader
  */
 
-G_BEGIN_DECLS
-
-enum
-{
+G_BEGIN_DECLS enum {
 	REMMINA_VIEW_FILE_LIST,
 	REMMINA_VIEW_FILE_TREE
 };
 
-enum
-{
+enum {
 	REMMINA_ACTION_CONNECT = 0,
 	REMMINA_ACTION_EDIT = 1
 };
 
-enum
-{
+enum {
 	AUTO_MODE = 0,
 	SCROLLED_WINDOW_MODE = 1,
 	FULLSCREEN_MODE = 2,
@@ -63,37 +58,32 @@ enum
 	VIEWPORT_FULLSCREEN_MODE = 4
 };
 
-enum
-{
+enum {
 	FLOATING_TOOLBAR_PLACEMENT_TOP = 0,
 	FLOATING_TOOLBAR_PLACEMENT_BOTTOM = 1
 };
 
-enum
-{
+enum {
 	TOOLBAR_PLACEMENT_TOP = 0,
 	TOOLBAR_PLACEMENT_RIGHT = 1,
 	TOOLBAR_PLACEMENT_BOTTOM = 2,
 	TOOLBAR_PLACEMENT_LEFT = 3
- };
+};
 
-enum
-{
+enum {
 	REMMINA_TAB_BY_GROUP = 0,
 	REMMINA_TAB_BY_PROTOCOL = 1,
 	REMMINA_TAB_ALL = 2,
 	REMMINA_TAB_NONE = 3
 };
 
-enum
-{
+enum {
 	FLOATING_TOOLBAR_VISIBILITY_PEEKING = 0,
-	FLOATING_TOOLBAR_VISIBILITY_INVISIBLE = 1, //"Invisible" corresponds to the "Hidden" option in the drop-down
+	FLOATING_TOOLBAR_VISIBILITY_INVISIBLE = 1,	//"Invisible" corresponds to the "Hidden" option in the drop-down
 	FLOATING_TOOLBAR_VISIBILITY_DISABLE = 2
 };
 
-typedef struct _RemminaPref
-{
+typedef struct _RemminaPref {
 	/* In RemminaPrefDialog options tab */
 	gboolean save_view_mode;
 	gint default_action;
@@ -167,7 +157,7 @@ typedef struct _RemminaPref
 	/* UID */
 	gchar *uid;
 
-	/* Remmina birthday julian format*/
+	/* Remmina birthday julian format */
 	guint32 bdate;
 } RemminaPref;
 
@@ -183,21 +173,20 @@ extern RemminaPref remmina_pref;
 void remmina_pref_init(void);
 void remmina_pref_save(void);
 
-void remmina_pref_add_recent(const gchar *protocol, const gchar *server);
-gchar* remmina_pref_get_recent(const gchar *protocol);
+void remmina_pref_add_recent(const gchar * protocol, const gchar * server);
+gchar *remmina_pref_get_recent(const gchar * protocol);
 void remmina_pref_clear_recent(void);
 
-guint remmina_pref_keymap_get_keyval(const gchar *keymap, guint keyval);
-gchar** remmina_pref_keymap_groups(void);
+guint remmina_pref_keymap_get_keyval(const gchar * keymap, guint keyval);
+gchar **remmina_pref_keymap_groups(void);
 
 gint remmina_pref_get_scale_quality(void);
 gint remmina_pref_get_ssh_loglevel(void);
 gboolean remmina_pref_get_ssh_parseconfig(void);
 gint remmina_pref_get_sshtunnel_port(void);
 
-void remmina_pref_set_value(const gchar *key, const gchar *value);
-gchar* remmina_pref_get_value(const gchar *key);
+void remmina_pref_set_value(const gchar * key, const gchar * value);
+gchar *remmina_pref_get_value(const gchar * key);
 
 G_END_DECLS
-
-#endif  /* __REMMINAPREF_H__  */
+#endif				/* __REMMINAPREF_H__  */

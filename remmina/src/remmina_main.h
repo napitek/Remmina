@@ -42,8 +42,7 @@
 
 typedef struct _RemminaMainPriv RemminaMainPriv;
 
-typedef struct _RemminaMain
-{
+typedef struct _RemminaMain {
 	GtkBuilder *builder;
 	GtkWindow *window;
 	/* Menu widgets */
@@ -91,8 +90,7 @@ typedef struct _RemminaMain
 	RemminaMainPriv *priv;
 } RemminaMain;
 
-struct _RemminaMainPriv
-{
+struct _RemminaMainPriv {
 	GtkTreeModel *file_model;
 	GtkTreeModel *file_model_filter;
 	GtkTreeModel *file_model_sort;
@@ -106,14 +104,12 @@ struct _RemminaMainPriv
 };
 
 G_BEGIN_DECLS
-
 /* Create the main Remmina window */
-GtkWidget* remmina_main_new(void);
+    GtkWidget * remmina_main_new(void);
 /* Get the current main window or NULL if not initialized */
-GtkWindow* remmina_main_get_window(void);
+GtkWindow *remmina_main_get_window(void);
 
-void remmina_main_update_file_datetime(RemminaFile *file);
+void remmina_main_update_file_datetime(RemminaFile * file);
 
 G_END_DECLS
-
-#endif  /* __REMMINAMAIN_H__  */
+#endif				/* __REMMINAMAIN_H__  */

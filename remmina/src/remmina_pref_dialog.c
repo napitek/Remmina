@@ -52,7 +52,7 @@ static RemminaPrefDialog *remmina_pref_dialog;
 #define GET_OBJECT(object_name) gtk_builder_get_object(remmina_pref_dialog->builder, object_name)
 
 /* Show a key chooser dialog */
-void remmina_pref_dialog_on_key_chooser(GtkWidget *widget, gpointer user_data)
+void remmina_pref_dialog_on_key_chooser(GtkWidget * widget, gpointer user_data)
 {
 	TRACE_CALL("remmina_pref_dialog_on_key_chooser");
 	RemminaKeyChooserArguments *arguments;
@@ -60,8 +60,7 @@ void remmina_pref_dialog_on_key_chooser(GtkWidget *widget, gpointer user_data)
 	g_return_if_fail(GTK_IS_BUTTON(widget));
 
 	arguments = remmina_key_chooser_new(GTK_WINDOW(remmina_pref_dialog->dialog), FALSE);
-	if (arguments->response != GTK_RESPONSE_CANCEL && arguments->response != GTK_RESPONSE_DELETE_EVENT)
-	{
+	if (arguments->response != GTK_RESPONSE_CANCEL && arguments->response != GTK_RESPONSE_DELETE_EVENT) {
 		gchar *val = remmina_key_chooser_get_value(arguments->keyval, arguments->state);
 		gtk_button_set_label(GTK_BUTTON(widget), val);
 		g_free(val);
@@ -70,7 +69,7 @@ void remmina_pref_dialog_on_key_chooser(GtkWidget *widget, gpointer user_data)
 }
 
 /* Show the available resolutions list dialog */
-void remmina_pref_on_button_resolutions_clicked(GtkWidget *widget, gpointer user_data)
+void remmina_pref_on_button_resolutions_clicked(GtkWidget * widget, gpointer user_data)
 {
 	TRACE_CALL("remmina_pref_on_button_resolutions_clicked");
 	GtkDialog *dialog = remmina_string_list_new(FALSE, NULL);
@@ -84,21 +83,21 @@ void remmina_pref_on_button_resolutions_clicked(GtkWidget *widget, gpointer user
 	gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
-void remmina_pref_dialog_clear_recent(GtkWidget *widget, gpointer user_data)
+void remmina_pref_dialog_clear_recent(GtkWidget * widget, gpointer user_data)
 {
 	TRACE_CALL("remmina_pref_dialog_clear_recent");
 	GtkDialog *dialog;
 
 	remmina_pref_clear_recent();
 	dialog = GTK_DIALOG(gtk_message_dialog_new(GTK_WINDOW(remmina_pref_dialog->dialog),
-	                    GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-	                    _("Recent lists cleared.")));
+						   GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+						   _("Recent lists cleared.")));
 	gtk_dialog_run(dialog);
 	gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
 /* Configure custom keystrokes to send to the plugins */
-void remmina_pref_on_button_keystrokes_clicked(GtkWidget *widget, gpointer user_data)
+void remmina_pref_on_button_keystrokes_clicked(GtkWidget * widget, gpointer user_data)
 {
 	TRACE_CALL("remmina_pref_on_button_keystrokes_clicked");
 	GtkDialog *dialog = remmina_string_list_new(TRUE, STRING_DELIMITOR2);
@@ -111,33 +110,44 @@ void remmina_pref_on_button_keystrokes_clicked(GtkWidget *widget, gpointer user_
 	gtk_widget_destroy(GTK_WIDGET(dialog));
 }
 
-void remmina_pref_dialog_on_close_clicked(GtkWidget *widget, RemminaPrefDialog *dialog)
+void remmina_pref_dialog_on_close_clicked(GtkWidget * widget, RemminaPrefDialog * dialog)
 {
 	TRACE_CALL("remmina_pref_dialog_on_close_clicked");
 	gtk_widget_destroy(GTK_WIDGET(remmina_pref_dialog->dialog));
 }
 
-void remmina_pref_on_dialog_destroy(GtkWidget *widget, gpointer user_data)
+void remmina_pref_on_dialog_destroy(GtkWidget * widget, gpointer user_data)
 {
 	TRACE_CALL("remmina_pref_on_dialog_destroy");
 	gboolean b;
 	GdkRGBA color;
 
-	remmina_pref.save_view_mode = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_options_remember_last_view_mode));
-	remmina_pref.fullscreen_on_auto = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_fullscreen_on_auto));
-	remmina_pref.always_show_tab = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_show_tabs));
-	remmina_pref.hide_connection_toolbar = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_hide_toolbar));
+	remmina_pref.save_view_mode =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON
+					 (remmina_pref_dialog->checkbutton_options_remember_last_view_mode));
+	remmina_pref.fullscreen_on_auto =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON
+					 (remmina_pref_dialog->checkbutton_appearance_fullscreen_on_auto));
+	remmina_pref.always_show_tab =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_show_tabs));
+	remmina_pref.hide_connection_toolbar =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_hide_toolbar));
 
 	remmina_pref.default_action = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_options_double_click);
 	remmina_pref.default_mode = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_view_mode);
 	remmina_pref.tab_mode = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_tab_interface);
-	remmina_pref.fullscreen_toolbar_visibility = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_fullscreen_toolbar_visibility);
-	remmina_pref.show_buttons_icons = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_show_buttons_icons);
-	remmina_pref.show_menu_icons = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_show_menu_icons);
+	remmina_pref.fullscreen_toolbar_visibility =
+	    gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_fullscreen_toolbar_visibility);
+	remmina_pref.show_buttons_icons =
+	    gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_show_buttons_icons);
+	remmina_pref.show_menu_icons =
+	    gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_appearance_show_menu_icons);
 	remmina_pref.scale_quality = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_options_scale_quality);
-	remmina_pref.screenshot_path = gtk_file_chooser_get_filename(remmina_pref_dialog->filechooserbutton_options_screenshots_path);
+	remmina_pref.screenshot_path =
+	    gtk_file_chooser_get_filename(remmina_pref_dialog->filechooserbutton_options_screenshots_path);
 	remmina_pref.ssh_loglevel = gtk_combo_box_get_active(remmina_pref_dialog->comboboxtext_options_ssh_loglevel);
-	remmina_pref.ssh_parseconfig = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_options_ssh_parseconfig));
+	remmina_pref.ssh_parseconfig =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_options_ssh_parseconfig));
 	remmina_pref.sshtunnel_port = atoi(gtk_entry_get_text(remmina_pref_dialog->entry_options_ssh_port));
 	if (remmina_pref.sshtunnel_port <= 0)
 		remmina_pref.sshtunnel_port = DEFAULT_SSHTUNNEL_PORT;
@@ -152,49 +162,62 @@ void remmina_pref_on_dialog_destroy(GtkWidget *widget, gpointer user_data)
 	if (remmina_pref.recent_maximum < 0)
 		remmina_pref.recent_maximum = 0;
 
-	remmina_pref.applet_new_ontop = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_new_connection_on_top));
-	remmina_pref.applet_hide_count = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_hide_totals));
-	remmina_pref.dark_tray_icon = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_light_tray));
+	remmina_pref.applet_new_ontop =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON
+					 (remmina_pref_dialog->checkbutton_applet_new_connection_on_top));
+	remmina_pref.applet_hide_count =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_hide_totals));
+	remmina_pref.dark_tray_icon =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_light_tray));
 
 	b = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_disable_tray));
-	if (remmina_pref.disable_tray_icon != b)
-	{
+	if (remmina_pref.disable_tray_icon != b) {
 		remmina_pref.disable_tray_icon = b;
 		remmina_icon_init();
 	}
-	if (b)
-	{
+	if (b) {
 		b = FALSE;
-	}
-	else
-	{
-		b = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_start_in_tray));
+	} else {
+		b = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON
+						 (remmina_pref_dialog->checkbutton_applet_start_in_tray));
 	}
 	remmina_icon_set_autostart(b);
 
-	remmina_pref.hostkey = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_host_key));
-	remmina_pref.shortcutkey_fullscreen = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_fullscreen));
-	remmina_pref.shortcutkey_autofit = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_auto_fit));
-	remmina_pref.shortcutkey_prevtab = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_switch_tab_left));
-	remmina_pref.shortcutkey_nexttab = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_switch_tab_right));
-	remmina_pref.shortcutkey_scale = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_scaled));
-	remmina_pref.shortcutkey_grab = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_grab_keyboard));
-	remmina_pref.shortcutkey_screenshot = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_screenshot));
-	remmina_pref.shortcutkey_minimize = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_minimize));
-	remmina_pref.shortcutkey_disconnect = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_disconnect));
-	remmina_pref.shortcutkey_toolbar = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_toolbar));
+	remmina_pref.hostkey =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_host_key));
+	remmina_pref.shortcutkey_fullscreen =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_fullscreen));
+	remmina_pref.shortcutkey_autofit =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_auto_fit));
+	remmina_pref.shortcutkey_prevtab =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_switch_tab_left));
+	remmina_pref.shortcutkey_nexttab =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label
+					   (remmina_pref_dialog->button_keyboard_switch_tab_right));
+	remmina_pref.shortcutkey_scale =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_scaled));
+	remmina_pref.shortcutkey_grab =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_grab_keyboard));
+	remmina_pref.shortcutkey_screenshot =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_screenshot));
+	remmina_pref.shortcutkey_minimize =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_minimize));
+	remmina_pref.shortcutkey_disconnect =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_disconnect));
+	remmina_pref.shortcutkey_toolbar =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_toolbar));
 
 	g_free(remmina_pref.vte_font);
-	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_font_system)))
-	{
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_font_system))) {
 		remmina_pref.vte_font = NULL;
+	} else {
+		remmina_pref.vte_font =
+		    g_strdup(gtk_font_button_get_font_name(remmina_pref_dialog->fontbutton_terminal_font));
 	}
-	else
-	{
-		remmina_pref.vte_font = g_strdup(gtk_font_button_get_font_name(remmina_pref_dialog->fontbutton_terminal_font));
-	}
-	remmina_pref.vte_allow_bold_text = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_bold));
-	remmina_pref.vte_system_colors = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_system_colors));
+	remmina_pref.vte_allow_bold_text =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_bold));
+	remmina_pref.vte_system_colors =
+	    gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_system_colors));
 #if GTK_CHECK_VERSION(3, 4, 0)
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(remmina_pref_dialog->colorbutton_foreground), &color);
 #else
@@ -208,16 +231,19 @@ void remmina_pref_on_dialog_destroy(GtkWidget *widget, gpointer user_data)
 #endif
 	remmina_pref.vte_background_color = gdk_rgba_to_string(&color);
 	remmina_pref.vte_lines = atoi(gtk_entry_get_text(remmina_pref_dialog->entry_scrollback_lines));
-	remmina_pref.vte_shortcutkey_copy = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_copy));
-	remmina_pref.vte_shortcutkey_paste = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_paste));
-	remmina_pref.vte_shortcutkey_select_all = remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_select_all));
+	remmina_pref.vte_shortcutkey_copy =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_copy));
+	remmina_pref.vte_shortcutkey_paste =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_paste));
+	remmina_pref.vte_shortcutkey_select_all =
+	    remmina_key_chooser_get_keyval(gtk_button_get_label(remmina_pref_dialog->button_keyboard_select_all));
 
 	remmina_pref_save();
 
 	remmina_pref_dialog->dialog = NULL;
 }
 
-static gboolean remmina_pref_dialog_add_pref_plugin(gchar *name, RemminaPlugin *plugin, gpointer user_data)
+static gboolean remmina_pref_dialog_add_pref_plugin(gchar * name, RemminaPlugin * plugin, gpointer user_data)
 {
 	TRACE_CALL("remmina_pref_dialog_add_pref_plugin");
 	RemminaPrefPlugin *pref_plugin;
@@ -239,23 +265,24 @@ static gboolean remmina_pref_dialog_add_pref_plugin(gchar *name, RemminaPlugin *
 	return FALSE;
 }
 
-void remmina_pref_dialog_vte_font_on_toggled(GtkWidget *widget, RemminaPrefDialog *dialog)
+void remmina_pref_dialog_vte_font_on_toggled(GtkWidget * widget, RemminaPrefDialog * dialog)
 {
 	TRACE_CALL("remmina_pref_dialog_vte_font_on_toggled");
-	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->fontbutton_terminal_font), !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->fontbutton_terminal_font),
+				 !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 }
 
-static void remmina_pref_dialog_vte_color_on_toggled(GtkWidget *widget, RemminaPrefDialog *dialog)
+static void remmina_pref_dialog_vte_color_on_toggled(GtkWidget * widget, RemminaPrefDialog * dialog)
 {
 	TRACE_CALL("remmina_pref_dialog_vte_color_on_toggled");
-	gboolean status = !gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	gtk_widget_set_sensitive (GTK_WIDGET(remmina_pref_dialog->label_terminal_foreground), status);
-	gtk_widget_set_sensitive (GTK_WIDGET(remmina_pref_dialog->colorbutton_foreground), status);
-	gtk_widget_set_sensitive (GTK_WIDGET(remmina_pref_dialog->label_terminal_background), status);
-	gtk_widget_set_sensitive (GTK_WIDGET(remmina_pref_dialog->colorbutton_background), status);
+	gboolean status = !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
+	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->label_terminal_foreground), status);
+	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->colorbutton_foreground), status);
+	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->label_terminal_background), status);
+	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->colorbutton_background), status);
 }
 
-void remmina_pref_dialog_disable_tray_icon_on_toggled(GtkWidget *widget, RemminaPrefDialog *dialog)
+void remmina_pref_dialog_disable_tray_icon_on_toggled(GtkWidget * widget, RemminaPrefDialog * dialog)
 {
 	TRACE_CALL("remmina_pref_dialog_disable_tray_icon_on_toggled");
 	gboolean b;
@@ -266,7 +293,7 @@ void remmina_pref_dialog_disable_tray_icon_on_toggled(GtkWidget *widget, Remmina
 }
 
 /* Helper function for remmina_pref_dialog_init() */
-static void remmina_pref_dialog_set_button_label(GtkButton *button, guint keyval)
+static void remmina_pref_dialog_set_button_label(GtkButton * button, guint keyval)
 {
 	gchar *val;
 
@@ -284,9 +311,13 @@ static void remmina_pref_dialog_init(void)
 
 	gtk_dialog_set_default_response(GTK_DIALOG(remmina_pref_dialog->dialog), GTK_RESPONSE_CLOSE);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_options_remember_last_view_mode), remmina_pref.save_view_mode);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_show_tabs), remmina_pref.always_show_tab);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_hide_toolbar), remmina_pref.hide_connection_toolbar);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON
+				     (remmina_pref_dialog->checkbutton_options_remember_last_view_mode),
+				     remmina_pref.save_view_mode);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_show_tabs),
+				     remmina_pref.always_show_tab);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_appearance_hide_toolbar),
+				     remmina_pref.hide_connection_toolbar);
 
 	g_snprintf(buf, sizeof(buf), "%i", remmina_pref.sshtunnel_port);
 	gtk_entry_set_text(remmina_pref_dialog->entry_options_ssh_port, buf);
@@ -295,40 +326,55 @@ static void remmina_pref_dialog_init(void)
 	g_snprintf(buf, sizeof(buf), "%i", remmina_pref.recent_maximum);
 	gtk_entry_set_text(remmina_pref_dialog->entry_options_recent_items, buf);
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_new_connection_on_top), remmina_pref.applet_new_ontop);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_hide_totals), remmina_pref.applet_hide_count);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_disable_tray), remmina_pref.disable_tray_icon);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_light_tray), remmina_pref.dark_tray_icon);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_start_in_tray), remmina_icon_is_autostart());
-	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->checkbutton_applet_start_in_tray), !remmina_pref.disable_tray_icon);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_new_connection_on_top),
+				     remmina_pref.applet_new_ontop);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_hide_totals),
+				     remmina_pref.applet_hide_count);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_disable_tray),
+				     remmina_pref.disable_tray_icon);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_light_tray),
+				     remmina_pref.dark_tray_icon);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_applet_start_in_tray),
+				     remmina_icon_is_autostart());
+	gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->checkbutton_applet_start_in_tray),
+				 !remmina_pref.disable_tray_icon);
 
 	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_host_key, remmina_pref.hostkey);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_fullscreen, remmina_pref.shortcutkey_fullscreen);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_auto_fit, remmina_pref.shortcutkey_autofit);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_switch_tab_left, remmina_pref.shortcutkey_prevtab);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_switch_tab_right, remmina_pref.shortcutkey_nexttab);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_scaled, remmina_pref.shortcutkey_scale);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_grab_keyboard, remmina_pref.shortcutkey_grab);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_screenshot, remmina_pref.shortcutkey_screenshot);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_minimize, remmina_pref.shortcutkey_minimize);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_disconnect, remmina_pref.shortcutkey_disconnect);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_toolbar, remmina_pref.shortcutkey_toolbar);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_fullscreen,
+					     remmina_pref.shortcutkey_fullscreen);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_auto_fit,
+					     remmina_pref.shortcutkey_autofit);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_switch_tab_left,
+					     remmina_pref.shortcutkey_prevtab);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_switch_tab_right,
+					     remmina_pref.shortcutkey_nexttab);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_scaled,
+					     remmina_pref.shortcutkey_scale);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_grab_keyboard,
+					     remmina_pref.shortcutkey_grab);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_screenshot,
+					     remmina_pref.shortcutkey_screenshot);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_minimize,
+					     remmina_pref.shortcutkey_minimize);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_disconnect,
+					     remmina_pref.shortcutkey_disconnect);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_toolbar,
+					     remmina_pref.shortcutkey_toolbar);
 
-	if (!(remmina_pref.vte_font && remmina_pref.vte_font[0]))
-	{
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_font_system), TRUE);
+	if (!(remmina_pref.vte_font && remmina_pref.vte_font[0])) {
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_font_system),
+					     TRUE);
 	}
-	if (remmina_pref.vte_font && remmina_pref.vte_font[0])
-	{
+	if (remmina_pref.vte_font && remmina_pref.vte_font[0]) {
 		gtk_font_button_set_font_name(remmina_pref_dialog->fontbutton_terminal_font, remmina_pref.vte_font);
-	}
-	else
-	{
+	} else {
 		gtk_font_button_set_font_name(remmina_pref_dialog->fontbutton_terminal_font, "Monospace 12");
 		gtk_widget_set_sensitive(GTK_WIDGET(remmina_pref_dialog->fontbutton_terminal_font), FALSE);
 	}
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_bold), remmina_pref.vte_allow_bold_text);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_system_colors), remmina_pref.vte_system_colors);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_bold),
+				     remmina_pref.vte_allow_bold_text);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_system_colors),
+				     remmina_pref.vte_system_colors);
 
 	/* Foreground color option */
 	gdk_rgba_parse(&color, remmina_pref.vte_foreground_color);
@@ -345,8 +391,10 @@ static void remmina_pref_dialog_init(void)
 	gtk_color_button_set_rgba(remmina_pref_dialog->colorbutton_background, &color);
 #endif
 
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_system_colors), remmina_pref.vte_system_colors);
-	remmina_pref_dialog_vte_color_on_toggled(GTK_WIDGET(remmina_pref_dialog->checkbutton_terminal_system_colors), NULL);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_terminal_system_colors),
+				     remmina_pref.vte_system_colors);
+	remmina_pref_dialog_vte_color_on_toggled(GTK_WIDGET(remmina_pref_dialog->checkbutton_terminal_system_colors),
+						 NULL);
 
 	g_snprintf(buf, sizeof(buf), "%i", remmina_pref.vte_lines);
 	gtk_entry_set_text(remmina_pref_dialog->entry_scrollback_lines, buf);
@@ -354,73 +402,107 @@ static void remmina_pref_dialog_init(void)
 	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_options_double_click, remmina_pref.default_action);
 	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_view_mode, remmina_pref.default_mode);
 	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_tab_interface, remmina_pref.tab_mode);
-	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_fullscreen_toolbar_visibility, remmina_pref.fullscreen_toolbar_visibility);
-	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_show_buttons_icons, remmina_pref.show_buttons_icons);
-	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_show_menu_icons, remmina_pref.show_menu_icons);
+	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_fullscreen_toolbar_visibility,
+				 remmina_pref.fullscreen_toolbar_visibility);
+	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_show_buttons_icons,
+				 remmina_pref.show_buttons_icons);
+	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_appearance_show_menu_icons,
+				 remmina_pref.show_menu_icons);
 	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_options_scale_quality, remmina_pref.scale_quality);
 	gtk_combo_box_set_active(remmina_pref_dialog->comboboxtext_options_ssh_loglevel, remmina_pref.ssh_loglevel);
-	if (remmina_pref.screenshot_path != NULL){
-		gtk_file_chooser_set_filename(remmina_pref_dialog->filechooserbutton_options_screenshots_path, remmina_pref.screenshot_path);
-	}else{
-		gtk_file_chooser_set_filename(remmina_pref_dialog->filechooserbutton_options_screenshots_path, g_get_home_dir());
+	if (remmina_pref.screenshot_path != NULL) {
+		gtk_file_chooser_set_filename(remmina_pref_dialog->filechooserbutton_options_screenshots_path,
+					      remmina_pref.screenshot_path);
+	} else {
+		gtk_file_chooser_set_filename(remmina_pref_dialog->filechooserbutton_options_screenshots_path,
+					      g_get_home_dir());
 	}
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_options_ssh_parseconfig), remmina_pref.ssh_parseconfig);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(remmina_pref_dialog->checkbutton_options_ssh_parseconfig),
+				     remmina_pref.ssh_parseconfig);
 
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_copy, remmina_pref.vte_shortcutkey_copy);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_paste, remmina_pref.vte_shortcutkey_paste);
-	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_select_all, remmina_pref.vte_shortcutkey_select_all);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_copy,
+					     remmina_pref.vte_shortcutkey_copy);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_paste,
+					     remmina_pref.vte_shortcutkey_paste);
+	remmina_pref_dialog_set_button_label(remmina_pref_dialog->button_keyboard_select_all,
+					     remmina_pref.vte_shortcutkey_select_all);
 
-	remmina_plugin_manager_for_each_plugin(REMMINA_PLUGIN_TYPE_PREF, remmina_pref_dialog_add_pref_plugin, remmina_pref_dialog->dialog);
+	remmina_plugin_manager_for_each_plugin(REMMINA_PLUGIN_TYPE_PREF, remmina_pref_dialog_add_pref_plugin,
+					       remmina_pref_dialog->dialog);
 
 	g_object_set_data(G_OBJECT(remmina_pref_dialog->dialog), "tag", "remmina-pref-dialog");
 	remmina_widget_pool_register(GTK_WIDGET(remmina_pref_dialog->dialog));
 }
 
 /* RemminaPrefDialog instance */
-GtkDialog* remmina_pref_dialog_new(gint default_tab, GtkWindow *parent)
+GtkDialog *remmina_pref_dialog_new(gint default_tab, GtkWindow * parent)
 {
 	TRACE_CALL("remmina_pref_dialog_new");
 	remmina_pref_dialog = g_new0(RemminaPrefDialog, 1);
 	remmina_pref_dialog->priv = g_new0(RemminaPrefDialogPriv, 1);
 
 	remmina_pref_dialog->builder = remmina_public_gtk_builder_new_from_file("remmina_preferences.glade");
-	remmina_pref_dialog->dialog = GTK_DIALOG(gtk_builder_get_object(remmina_pref_dialog->builder, "RemminaPrefDialog"));
+	remmina_pref_dialog->dialog =
+	    GTK_DIALOG(gtk_builder_get_object(remmina_pref_dialog->builder, "RemminaPrefDialog"));
 	if (parent)
 		gtk_window_set_transient_for(GTK_WINDOW(remmina_pref_dialog->dialog), parent);
 
 	remmina_pref_dialog->notebook_preferences = GTK_NOTEBOOK(GET_OBJECT("notebook_preferences"));
 
-	remmina_pref_dialog->checkbutton_options_remember_last_view_mode = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_options_remember_last_view_mode"));
-	remmina_pref_dialog->checkbutton_options_save_settings = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_options_save_settings"));
-	remmina_pref_dialog->checkbutton_appearance_fullscreen_on_auto = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_appearance_fullscreen_on_auto"));
-	remmina_pref_dialog->checkbutton_appearance_show_tabs = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_appearance_show_tabs"));
-	remmina_pref_dialog->checkbutton_appearance_hide_toolbar = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_appearance_hide_toolbar"));
-	remmina_pref_dialog->comboboxtext_options_double_click = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_options_double_click"));
-	remmina_pref_dialog->comboboxtext_appearance_view_mode = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_view_mode"));
-	remmina_pref_dialog->comboboxtext_appearance_tab_interface = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_tab_interface"));
-	remmina_pref_dialog->comboboxtext_appearance_fullscreen_toolbar_visibility = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_fullscreen_toolbar_visibility"));
-	remmina_pref_dialog->comboboxtext_appearance_show_buttons_icons = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_show_buttons_icons"));
-	remmina_pref_dialog->comboboxtext_appearance_show_menu_icons = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_show_menu_icons"));
-	remmina_pref_dialog->comboboxtext_options_scale_quality = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_options_scale_quality"));
-	remmina_pref_dialog->checkbutton_options_ssh_parseconfig = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_options_ssh_parseconfig"));
-	remmina_pref_dialog->comboboxtext_options_ssh_loglevel = GTK_COMBO_BOX(GET_OBJECT("comboboxtext_options_ssh_loglevel"));
-	remmina_pref_dialog->filechooserbutton_options_screenshots_path = GTK_FILE_CHOOSER(GET_OBJECT("filechooserbutton_options_screenshots_path"));
+	remmina_pref_dialog->checkbutton_options_remember_last_view_mode =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_options_remember_last_view_mode"));
+	remmina_pref_dialog->checkbutton_options_save_settings =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_options_save_settings"));
+	remmina_pref_dialog->checkbutton_appearance_fullscreen_on_auto =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_appearance_fullscreen_on_auto"));
+	remmina_pref_dialog->checkbutton_appearance_show_tabs =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_appearance_show_tabs"));
+	remmina_pref_dialog->checkbutton_appearance_hide_toolbar =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_appearance_hide_toolbar"));
+	remmina_pref_dialog->comboboxtext_options_double_click =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_options_double_click"));
+	remmina_pref_dialog->comboboxtext_appearance_view_mode =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_view_mode"));
+	remmina_pref_dialog->comboboxtext_appearance_tab_interface =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_tab_interface"));
+	remmina_pref_dialog->comboboxtext_appearance_fullscreen_toolbar_visibility =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_fullscreen_toolbar_visibility"));
+	remmina_pref_dialog->comboboxtext_appearance_show_buttons_icons =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_show_buttons_icons"));
+	remmina_pref_dialog->comboboxtext_appearance_show_menu_icons =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_appearance_show_menu_icons"));
+	remmina_pref_dialog->comboboxtext_options_scale_quality =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_options_scale_quality"));
+	remmina_pref_dialog->checkbutton_options_ssh_parseconfig =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_options_ssh_parseconfig"));
+	remmina_pref_dialog->comboboxtext_options_ssh_loglevel =
+	    GTK_COMBO_BOX(GET_OBJECT("comboboxtext_options_ssh_loglevel"));
+	remmina_pref_dialog->filechooserbutton_options_screenshots_path =
+	    GTK_FILE_CHOOSER(GET_OBJECT("filechooserbutton_options_screenshots_path"));
 	remmina_pref_dialog->entry_options_ssh_port = GTK_ENTRY(GET_OBJECT("entry_options_ssh_port"));
 	remmina_pref_dialog->entry_options_scroll = GTK_ENTRY(GET_OBJECT("entry_options_scroll"));
 	remmina_pref_dialog->entry_options_recent_items = GTK_ENTRY(GET_OBJECT("entry_options_recent_items"));
-	remmina_pref_dialog->button_options_recent_items_clear = GTK_BUTTON(GET_OBJECT("button_options_recent_items_clear"));
+	remmina_pref_dialog->button_options_recent_items_clear =
+	    GTK_BUTTON(GET_OBJECT("button_options_recent_items_clear"));
 
-	remmina_pref_dialog->checkbutton_applet_new_connection_on_top = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_new_connection_on_top"));
-	remmina_pref_dialog->checkbutton_applet_hide_totals = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_hide_totals"));
-	remmina_pref_dialog->checkbutton_applet_disable_tray = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_disable_tray"));
-	remmina_pref_dialog->checkbutton_applet_light_tray = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_light_tray"));
-	remmina_pref_dialog->checkbutton_applet_start_in_tray = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_start_in_tray"));
+	remmina_pref_dialog->checkbutton_applet_new_connection_on_top =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_new_connection_on_top"));
+	remmina_pref_dialog->checkbutton_applet_hide_totals =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_hide_totals"));
+	remmina_pref_dialog->checkbutton_applet_disable_tray =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_disable_tray"));
+	remmina_pref_dialog->checkbutton_applet_light_tray =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_light_tray"));
+	remmina_pref_dialog->checkbutton_applet_start_in_tray =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_applet_start_in_tray"));
 
 	remmina_pref_dialog->button_keyboard_host_key = GTK_BUTTON(GET_OBJECT("button_keyboard_host_key"));
 	remmina_pref_dialog->button_keyboard_fullscreen = GTK_BUTTON(GET_OBJECT("button_keyboard_fullscreen"));
 	remmina_pref_dialog->button_keyboard_auto_fit = GTK_BUTTON(GET_OBJECT("button_keyboard_auto_fit"));
-	remmina_pref_dialog->button_keyboard_switch_tab_left = GTK_BUTTON(GET_OBJECT("button_keyboard_switch_tab_left"));
-	remmina_pref_dialog->button_keyboard_switch_tab_right = GTK_BUTTON(GET_OBJECT("button_keyboard_switch_tabright"));
+	remmina_pref_dialog->button_keyboard_switch_tab_left =
+	    GTK_BUTTON(GET_OBJECT("button_keyboard_switch_tab_left"));
+	remmina_pref_dialog->button_keyboard_switch_tab_right =
+	    GTK_BUTTON(GET_OBJECT("button_keyboard_switch_tabright"));
 	remmina_pref_dialog->button_keyboard_scaled = GTK_BUTTON(GET_OBJECT("button_keyboard_scaled"));
 	remmina_pref_dialog->button_keyboard_grab_keyboard = GTK_BUTTON(GET_OBJECT("button_keyboard_grab_keyboard"));
 	remmina_pref_dialog->button_keyboard_screenshot = GTK_BUTTON(GET_OBJECT("button_keyboard_screenshot"));
@@ -428,10 +510,12 @@ GtkDialog* remmina_pref_dialog_new(gint default_tab, GtkWindow *parent)
 	remmina_pref_dialog->button_keyboard_disconnect = GTK_BUTTON(GET_OBJECT("button_keyboard_disconnect"));
 	remmina_pref_dialog->button_keyboard_toolbar = GTK_BUTTON(GET_OBJECT("button_keyboard_toolbar"));
 
-	remmina_pref_dialog->checkbutton_terminal_font_system = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_terminal_font_system"));
+	remmina_pref_dialog->checkbutton_terminal_font_system =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_terminal_font_system"));
 	remmina_pref_dialog->fontbutton_terminal_font = GTK_FONT_BUTTON(GET_OBJECT("fontbutton_terminal_font"));
 	remmina_pref_dialog->checkbutton_terminal_bold = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_terminal_bold"));
-	remmina_pref_dialog->checkbutton_terminal_system_colors = GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_terminal_system_colors"));
+	remmina_pref_dialog->checkbutton_terminal_system_colors =
+	    GTK_CHECK_BUTTON(GET_OBJECT("checkbutton_terminal_system_colors"));
 	remmina_pref_dialog->label_terminal_foreground = GTK_LABEL(GET_OBJECT("label_terminal_foreground"));
 	remmina_pref_dialog->colorbutton_foreground = GTK_COLOR_BUTTON(GET_OBJECT("colorbutton_foreground"));
 	remmina_pref_dialog->label_terminal_background = GTK_LABEL(GET_OBJECT("label_terminal_background"));
@@ -451,7 +535,7 @@ GtkDialog* remmina_pref_dialog_new(gint default_tab, GtkWindow *parent)
 	return remmina_pref_dialog->dialog;
 }
 
-GtkDialog* remmina_pref_dialog_get_dialog()
+GtkDialog *remmina_pref_dialog_get_dialog()
 {
 	if (!remmina_pref_dialog)
 		return NULL;

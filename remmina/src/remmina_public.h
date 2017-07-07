@@ -66,51 +66,52 @@
 	gtk_widget_class_bind_template_callback(wc, callback);
 
 G_BEGIN_DECLS
-
 /* items is separated by STRING_DELIMTOR */
-GtkWidget* remmina_public_create_combo_entry(const gchar *text, const gchar *def, gboolean descending);
-GtkWidget* remmina_public_create_combo_text_d(const gchar *text, const gchar *def, const gchar *empty_choice);
-void remmina_public_load_combo_text_d(GtkWidget *combo, const gchar *text, const gchar *def, const gchar *empty_choice);
-GtkWidget* remmina_public_create_combo(gboolean use_icon);
-GtkWidget* remmina_public_create_combo_map(const gpointer *key_value_list, const gchar *def, gboolean use_icon,
-        const gchar *domain);
-GtkWidget* remmina_public_create_combo_mapint(const gpointer *key_value_list, gint def, gboolean use_icon, const gchar *domain);
+    GtkWidget * remmina_public_create_combo_entry(const gchar * text, const gchar * def, gboolean descending);
+GtkWidget *remmina_public_create_combo_text_d(const gchar * text, const gchar * def, const gchar * empty_choice);
+void remmina_public_load_combo_text_d(GtkWidget * combo, const gchar * text, const gchar * def,
+				      const gchar * empty_choice);
+GtkWidget *remmina_public_create_combo(gboolean use_icon);
+GtkWidget *remmina_public_create_combo_map(const gpointer * key_value_list, const gchar * def, gboolean use_icon,
+					   const gchar * domain);
+GtkWidget *remmina_public_create_combo_mapint(const gpointer * key_value_list, gint def, gboolean use_icon,
+					      const gchar * domain);
 
-void remmina_public_create_group(GtkGrid *table, const gchar *group, gint row, gint rows, gint cols);
+void remmina_public_create_group(GtkGrid * table, const gchar * group, gint row, gint rows, gint cols);
 
-gchar* remmina_public_combo_get_active_text(GtkComboBox *combo);
+gchar *remmina_public_combo_get_active_text(GtkComboBox * combo);
 
 /* A function for gtk_menu_popup to get the position right below the widget specified by user_data */
-void remmina_public_popup_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data);
+void remmina_public_popup_position(GtkMenu * menu, gint * x, gint * y, gboolean * push_in, gpointer user_data);
 
 /* Combine two paths into one by correctly handling trailing slash. Return newly allocated string */
-gchar* remmina_public_combine_path(const gchar *path1, const gchar *path2);
+gchar *remmina_public_combine_path(const gchar * path1, const gchar * path2);
 
 /* Parse a server entry with server name and port */
-void remmina_public_get_server_port(const gchar *server, gint defaultport, gchar **host, gint *port);
+void remmina_public_get_server_port(const gchar * server, gint defaultport, gchar ** host, gint * port);
 
 /* X */
-gboolean remmina_public_get_xauth_cookie(const gchar *display, gchar **msg);
-gint remmina_public_open_xdisplay(const gchar *disp);
-guint remmina_public_get_current_workspace(GdkScreen *screen);
-guint remmina_public_get_window_workspace(GtkWindow *gtkwindow);
+gboolean remmina_public_get_xauth_cookie(const gchar * display, gchar ** msg);
+gint remmina_public_open_xdisplay(const gchar * disp);
+guint remmina_public_get_current_workspace(GdkScreen * screen);
+guint remmina_public_get_window_workspace(GtkWindow * gtkwindow);
 
 /* Find hardware keycode for the requested keyval */
-guint16 remmina_public_get_keycode_for_keyval(GdkKeymap *keymap, guint keyval);
+guint16 remmina_public_get_keycode_for_keyval(GdkKeymap * keymap, guint keyval);
 /* Check if the requested keycode is a key modifier */
-gboolean remmina_public_get_modifier_for_keycode(GdkKeymap *keymap, guint16 keycode);
+gboolean remmina_public_get_modifier_for_keycode(GdkKeymap * keymap, guint16 keycode);
 /* Load a GtkBuilder object from a filename */
-GtkBuilder* remmina_public_gtk_builder_new_from_file(gchar *filename);
+GtkBuilder *remmina_public_gtk_builder_new_from_file(gchar * filename);
 /* Change parent container for a widget */
-void remmina_public_gtk_widget_reparent(GtkWidget *widget, GtkContainer *container);
+void remmina_public_gtk_widget_reparent(GtkWidget * widget, GtkContainer * container);
 /* Used to send desktop notifications */
-void remmina_public_send_notification (const gchar *notification_id,
-		const gchar *notification_title, const gchar *notification_message);
+void remmina_public_send_notification(const gchar * notification_id,
+				      const gchar * notification_title, const gchar * notification_message);
 /* Validate the inserted value for a new resolution */
-gboolean remmina_public_resolution_validation_func(const gchar *new_str, gchar **error);
+gboolean remmina_public_resolution_validation_func(const gchar * new_str, gchar ** error);
 /* Replaces all occurences of search in a new copy of string by replacement. */
-gchar* remmina_public_str_replace(const gchar *string, const gchar *search, const gchar *replacement);
+gchar *remmina_public_str_replace(const gchar * string, const gchar * search, const gchar * replacement);
 /* Replaces all occurences of search in a new copy of string by replacement
  * and overwrites the original string */
-gchar* remmina_public_str_replace_in_place(gchar *string, const gchar *search, const gchar *replacement);
-#endif  /* __REMMINAPUBLIC_H__  */
+gchar *remmina_public_str_replace_in_place(gchar * string, const gchar * search, const gchar * replacement);
+#endif				/* __REMMINAPUBLIC_H__  */

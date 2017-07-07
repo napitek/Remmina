@@ -35,7 +35,7 @@
 #include "spice_plugin.h"
 
 #ifdef SPICE_GTK_CHECK_VERSION
-#  if SPICE_GTK_CHECK_VERSION(0, 31, 0)
+#if SPICE_GTK_CHECK_VERSION(0, 31, 0)
 
 static void remmina_plugin_spice_file_transfer_cancel_cb(GtkButton *, SpiceFileTransferTask *);
 static void remmina_plugin_spice_file_transfer_dialog_response_cb(GtkDialog *, gint, RemminaProtocolWidget *);
@@ -50,10 +50,11 @@ typedef struct _RemminaPluginSpiceXferWidgets {
 	GtkWidget *cancel;
 } RemminaPluginSpiceXferWidgets;
 
-static RemminaPluginSpiceXferWidgets * remmina_plugin_spice_xfer_widgets_new(SpiceFileTransferTask *);
-static void remmina_plugin_spice_xfer_widgets_free(RemminaPluginSpiceXferWidgets *widgets);
+static RemminaPluginSpiceXferWidgets *remmina_plugin_spice_xfer_widgets_new(SpiceFileTransferTask *);
+static void remmina_plugin_spice_xfer_widgets_free(RemminaPluginSpiceXferWidgets * widgets);
 
-void remmina_plugin_spice_file_transfer_new_cb(SpiceMainChannel *main_channel, SpiceFileTransferTask *task, RemminaProtocolWidget *gp)
+void remmina_plugin_spice_file_transfer_new_cb(SpiceMainChannel * main_channel, SpiceFileTransferTask * task,
+					       RemminaProtocolWidget * gp)
 {
 	TRACE_CALL(__func__);
 
@@ -61,56 +62,44 @@ void remmina_plugin_spice_file_transfer_new_cb(SpiceMainChannel *main_channel, S
 	RemminaPluginSpiceXferWidgets *widgets;
 	RemminaPluginSpiceData *gpdata = GET_PLUGIN_DATA(gp);
 
-	g_signal_connect(task,
-	                 "finished",
-	                 G_CALLBACK(remmina_plugin_spice_file_transfer_finished_cb),
-	                 gp);
+	g_signal_connect(task, "finished", G_CALLBACK(remmina_plugin_spice_file_transfer_finished_cb), gp);
 
-	if (!gpdata->file_transfers)
-	{
-	    gpdata->file_transfers = g_hash_table_new_full(g_direct_hash,
-	                                                   g_direct_equal,
-	                                                   g_object_unref,
-	                                                   (GDestroyNotify)remmina_plugin_spice_xfer_widgets_free);
+	if (!gpdata->file_transfers) {
+		gpdata->file_transfers = g_hash_table_new_full(g_direct_hash,
+							       g_direct_equal,
+							       g_object_unref,
+							       (GDestroyNotify)
+							       remmina_plugin_spice_xfer_widgets_free);
 	}
 
-	if (!gpdata->file_transfer_dialog)
-	{
+	if (!gpdata->file_transfer_dialog) {
 		/*
 		 * FIXME: Use the RemminaConnectionWindow as transient parent widget
 		 * (and add the GTK_DIALOG_DESTROY_WITH_PARENT flag) if it becomes
 		 * accessible from the Remmina plugin API.
 		 */
 		gpdata->file_transfer_dialog = gtk_dialog_new_with_buttons(_("File Transfers"),
-		                                                           NULL, 0,
-		                                                           _("_Cancel"),
-		                                                           GTK_RESPONSE_CANCEL,
-		                                                           NULL);
+									   NULL, 0,
+									   _("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
 		dialog_content = gtk_dialog_get_content_area(GTK_DIALOG(gpdata->file_transfer_dialog));
 		gtk_widget_set_size_request(dialog_content, 400, -1);
 		gtk_window_set_resizable(GTK_WINDOW(gpdata->file_transfer_dialog), FALSE);
 		g_signal_connect(gpdata->file_transfer_dialog,
-		                 "response",
-		                 G_CALLBACK(remmina_plugin_spice_file_transfer_dialog_response_cb),
-		                 gp);
+				 "response", G_CALLBACK(remmina_plugin_spice_file_transfer_dialog_response_cb), gp);
 	}
 
 	widgets = remmina_plugin_spice_xfer_widgets_new(task);
 	g_hash_table_insert(gpdata->file_transfers, g_object_ref(task), widgets);
 
 	gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(gpdata->file_transfer_dialog))),
-	                   widgets->vbox,
-	                   TRUE, TRUE, 6);
+			   widgets->vbox, TRUE, TRUE, 6);
 
-	g_signal_connect(task,
-	                 "notify::progress",
-	                 G_CALLBACK(remmina_plugin_spice_file_transfer_progress_cb),
-	                 gp);
+	g_signal_connect(task, "notify::progress", G_CALLBACK(remmina_plugin_spice_file_transfer_progress_cb), gp);
 
 	gtk_widget_show(gpdata->file_transfer_dialog);
 }
 
-static RemminaPluginSpiceXferWidgets * remmina_plugin_spice_xfer_widgets_new(SpiceFileTransferTask *task)
+static RemminaPluginSpiceXferWidgets *remmina_plugin_spice_xfer_widgets_new(SpiceFileTransferTask * task)
 {
 	TRACE_CALL(__func__);
 
@@ -130,22 +119,15 @@ static RemminaPluginSpiceXferWidgets * remmina_plugin_spice_xfer_widgets_new(Spi
 	gtk_widget_set_valign(widgets->progress, GTK_ALIGN_CENTER);
 
 	widgets->cancel = gtk_button_new_from_icon_name("gtk-cancel", GTK_ICON_SIZE_SMALL_TOOLBAR);
-	g_signal_connect(widgets->cancel,
-	                 "clicked",
-	                 G_CALLBACK(remmina_plugin_spice_file_transfer_cancel_cb),
-	                 task);
+	g_signal_connect(widgets->cancel, "clicked", G_CALLBACK(remmina_plugin_spice_file_transfer_cancel_cb), task);
 	gtk_widget_set_hexpand(widgets->cancel, FALSE);
 	gtk_widget_set_valign(widgets->cancel, GTK_ALIGN_CENTER);
 
-	gtk_box_pack_start(GTK_BOX(widgets->hbox), widgets->progress,
-	                   TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(widgets->hbox), widgets->cancel,
-	                   FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(widgets->hbox), widgets->progress, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(widgets->hbox), widgets->cancel, FALSE, TRUE, 0);
 
-	gtk_box_pack_start(GTK_BOX(widgets->vbox), widgets->label,
-	                   TRUE, TRUE, 0);
-	gtk_box_pack_start(GTK_BOX(widgets->vbox), widgets->hbox,
-	                   TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(widgets->vbox), widgets->label, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(widgets->vbox), widgets->hbox, TRUE, TRUE, 0);
 
 	gtk_widget_show_all(widgets->vbox);
 
@@ -154,7 +136,7 @@ static RemminaPluginSpiceXferWidgets * remmina_plugin_spice_xfer_widgets_new(Spi
 	return widgets;
 }
 
-static void remmina_plugin_spice_xfer_widgets_free(RemminaPluginSpiceXferWidgets *widgets)
+static void remmina_plugin_spice_xfer_widgets_free(RemminaPluginSpiceXferWidgets * widgets)
 {
 	TRACE_CALL(__func__);
 
@@ -163,7 +145,7 @@ static void remmina_plugin_spice_xfer_widgets_free(RemminaPluginSpiceXferWidgets
 	g_free(widgets);
 }
 
-static void remmina_plugin_spice_file_transfer_cancel_cb(GtkButton *button, SpiceFileTransferTask *task)
+static void remmina_plugin_spice_file_transfer_cancel_cb(GtkButton * button, SpiceFileTransferTask * task)
 {
 	TRACE_CALL(__func__);
 
@@ -171,7 +153,8 @@ static void remmina_plugin_spice_file_transfer_cancel_cb(GtkButton *button, Spic
 }
 
 
-static void remmina_plugin_spice_file_transfer_dialog_response_cb(GtkDialog *dialog, gint response, RemminaProtocolWidget *gp)
+static void remmina_plugin_spice_file_transfer_dialog_response_cb(GtkDialog * dialog, gint response,
+								  RemminaProtocolWidget * gp)
 {
 	TRACE_CALL(__func__);
 
@@ -180,18 +163,17 @@ static void remmina_plugin_spice_file_transfer_dialog_response_cb(GtkDialog *dia
 	SpiceFileTransferTask *task;
 	RemminaPluginSpiceData *gpdata = GET_PLUGIN_DATA(gp);
 
-	if (response == GTK_RESPONSE_CANCEL)
-	{
+	if (response == GTK_RESPONSE_CANCEL) {
 		g_hash_table_iter_init(&iter, gpdata->file_transfers);
-		while (g_hash_table_iter_next(&iter, &key, &value))
-		{
+		while (g_hash_table_iter_next(&iter, &key, &value)) {
 			task = key;
 			spice_file_transfer_task_cancel(task);
 		}
 	}
 }
 
-static void remmina_plugin_spice_file_transfer_progress_cb(GObject *task, GParamSpec *param_spec, RemminaProtocolWidget *gp)
+static void remmina_plugin_spice_file_transfer_progress_cb(GObject * task, GParamSpec * param_spec,
+							   RemminaProtocolWidget * gp)
 {
 	TRACE_CALL(__func__);
 
@@ -199,14 +181,14 @@ static void remmina_plugin_spice_file_transfer_progress_cb(GObject *task, GParam
 	RemminaPluginSpiceData *gpdata = GET_PLUGIN_DATA(gp);
 
 	widgets = g_hash_table_lookup(gpdata->file_transfers, task);
-	if (widgets)
-	{
+	if (widgets) {
 		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(widgets->progress),
-		                              spice_file_transfer_task_get_progress(SPICE_FILE_TRANSFER_TASK(task)));
+					      spice_file_transfer_task_get_progress(SPICE_FILE_TRANSFER_TASK(task)));
 	}
 }
 
-static void remmina_plugin_spice_file_transfer_finished_cb(SpiceFileTransferTask *task, GError *error, RemminaProtocolWidget *gp)
+static void remmina_plugin_spice_file_transfer_finished_cb(SpiceFileTransferTask * task, GError * error,
+							   RemminaProtocolWidget * gp)
 {
 	TRACE_CALL(__func__);
 
@@ -220,28 +202,21 @@ static void remmina_plugin_spice_file_transfer_finished_cb(SpiceFileTransferTask
 	 */
 	filename = spice_file_transfer_task_get_filename(task);
 
-	if (error)
-	{
+	if (error) {
 		notification = g_notification_new(_("Transfer error"));
-		notification_message = g_strdup_printf(_("%s: %s"),
-		                                       filename, error->message);
-	}
-	else
-	{
+		notification_message = g_strdup_printf(_("%s: %s"), filename, error->message);
+	} else {
 		notification = g_notification_new(_("Transfer completed"));
-		notification_message = g_strdup_printf(_("File %s transferred successfully"),
-		                                       filename);
+		notification_message = g_strdup_printf(_("File %s transferred successfully"), filename);
 	}
 
 	g_notification_set_body(notification, notification_message);
 	g_application_send_notification(g_application_get_default(),
-	                                "remmina-plugin-spice-file-transfer-finished",
-	                                notification);
+					"remmina-plugin-spice-file-transfer-finished", notification);
 
 	g_hash_table_remove(gpdata->file_transfers, task);
 
-	if (!g_hash_table_size(gpdata->file_transfers))
-	{
+	if (!g_hash_table_size(gpdata->file_transfers)) {
 		gtk_widget_hide(gpdata->file_transfer_dialog);
 	}
 
@@ -249,5 +224,5 @@ static void remmina_plugin_spice_file_transfer_finished_cb(SpiceFileTransferTask
 	g_free(notification_message);
 	g_object_unref(notification);
 }
-#  endif /* SPICE_GTK_CHECK_VERSION(0, 31, 0) */
-#endif /* SPICE_GTK_CHECK_VERSION */
+#endif				/* SPICE_GTK_CHECK_VERSION(0, 31, 0) */
+#endif				/* SPICE_GTK_CHECK_VERSION */

@@ -47,30 +47,27 @@
 #define REMMINA_IS_LOG_WINDOW_CLASS(klass)    (G_TYPE_CHECK_CLASS_TYPE ((klass), REMMINA_TYPE_LOG_WINDOW))
 #define REMMINA_LOG_WINDOW_GET_CLASS(obj)     (G_TYPE_INSTANCE_GET_CLASS ((obj), REMMINA_TYPE_LOG_WINDOW, RemminaLogWindowClass))
 
-typedef struct _RemminaLogWindow
-{
+typedef struct _RemminaLogWindow {
 	GtkWindow window;
 
 	GtkWidget *log_view;
 	GtkTextBuffer *log_buffer;
 } RemminaLogWindow;
 
-typedef struct _RemminaLogWindowClass
-{
+typedef struct _RemminaLogWindowClass {
 	GtkWindowClass parent_class;
 } RemminaLogWindowClass;
 
-GType remmina_log_window_get_type(void)
-G_GNUC_CONST;
+GType remmina_log_window_get_type(void) G_GNUC_CONST;
 
 G_DEFINE_TYPE(RemminaLogWindow, remmina_log_window, GTK_TYPE_WINDOW)
 
-static void remmina_log_window_class_init(RemminaLogWindowClass *klass)
+static void remmina_log_window_class_init(RemminaLogWindowClass * klass)
 {
 	TRACE_CALL("remmina_log_window_class_init");
 }
 
-static void remmina_log_window_init(RemminaLogWindow *logwin)
+static void remmina_log_window_init(RemminaLogWindow * logwin)
 {
 	TRACE_CALL("remmina_log_window_init");
 	GtkWidget *scrolledwindow;
@@ -92,8 +89,7 @@ static void remmina_log_window_init(RemminaLogWindow *logwin)
 	logwin->log_buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widget));
 }
 
-static GtkWidget*
-remmina_log_window_new(void)
+static GtkWidget *remmina_log_window_new(void)
 {
 	TRACE_CALL("remmina_log_window_new");
 	return GTK_WIDGET(g_object_new(REMMINA_TYPE_LOG_WINDOW, NULL));
@@ -102,7 +98,7 @@ remmina_log_window_new(void)
 /* We will always only have one log window per instance */
 static GtkWidget *log_window = NULL;
 
-static void remmina_log_end(GtkWidget *widget, gpointer data)
+static void remmina_log_end(GtkWidget * widget, gpointer data)
 {
 	TRACE_CALL("remmina_log_end");
 	log_window = NULL;
@@ -111,12 +107,9 @@ static void remmina_log_end(GtkWidget *widget, gpointer data)
 void remmina_log_start(void)
 {
 	TRACE_CALL("remmina_log_start");
-	if (log_window)
-	{
+	if (log_window) {
 		gtk_window_present(GTK_WINDOW(log_window));
-	}
-	else
-	{
+	} else {
 		log_window = remmina_log_window_new();
 		gtk_window_set_default_size(GTK_WINDOW(log_window), 640, 480);
 		g_signal_connect(G_OBJECT(log_window), "destroy", G_CALLBACK(remmina_log_end), NULL);
@@ -135,11 +128,10 @@ static gboolean remmina_log_scroll_to_end(gpointer data)
 	TRACE_CALL("remmina_log_scroll_to_end");
 	GtkTextIter iter;
 
-	if (log_window)
-	{
-		gtk_text_buffer_get_end_iter(REMMINA_LOG_WINDOW (log_window)->log_buffer, &iter);
-		gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(REMMINA_LOG_WINDOW (log_window)->log_view), &iter, 0.0, FALSE, 0.0,
-		                             0.0);
+	if (log_window) {
+		gtk_text_buffer_get_end_iter(REMMINA_LOG_WINDOW(log_window)->log_buffer, &iter);
+		gtk_text_view_scroll_to_iter(GTK_TEXT_VIEW(REMMINA_LOG_WINDOW(log_window)->log_view), &iter, 0.0,
+					     FALSE, 0.0, 0.0);
 	}
 	return FALSE;
 }
@@ -149,17 +141,16 @@ static gboolean remmina_log_print_real(gpointer data)
 	TRACE_CALL("remmina_log_print_real");
 	GtkTextIter iter;
 
-	if (log_window)
-	{
-		gtk_text_buffer_get_end_iter(REMMINA_LOG_WINDOW (log_window)->log_buffer, &iter);
-		gtk_text_buffer_insert(REMMINA_LOG_WINDOW (log_window)->log_buffer, &iter, (const gchar*) data, -1);
+	if (log_window) {
+		gtk_text_buffer_get_end_iter(REMMINA_LOG_WINDOW(log_window)->log_buffer, &iter);
+		gtk_text_buffer_insert(REMMINA_LOG_WINDOW(log_window)->log_buffer, &iter, (const gchar *) data, -1);
 		IDLE_ADD(remmina_log_scroll_to_end, NULL);
 	}
 	g_free(data);
 	return FALSE;
 }
 
-void remmina_log_print(const gchar *text)
+void remmina_log_print(const gchar * text)
 {
 	TRACE_CALL("remmina_log_print");
 	if (!log_window)
@@ -168,18 +159,18 @@ void remmina_log_print(const gchar *text)
 	IDLE_ADD(remmina_log_print_real, g_strdup(text));
 }
 
-void remmina_log_printf(const gchar *fmt, ...)
+void remmina_log_printf(const gchar * fmt, ...)
 {
 	TRACE_CALL("remmina_log_printf");
 	va_list args;
 	gchar *text;
 
-	if (!log_window) return;
+	if (!log_window)
+		return;
 
-	va_start (args, fmt);
-	text = g_strdup_vprintf (fmt, args);
-	va_end (args);
+	va_start(args, fmt);
+	text = g_strdup_vprintf(fmt, args);
+	va_end(args);
 
-	IDLE_ADD (remmina_log_print_real, text);
+	IDLE_ADD(remmina_log_print_real, text);
 }
-

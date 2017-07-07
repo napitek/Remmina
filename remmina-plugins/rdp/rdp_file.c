@@ -37,10 +37,10 @@
 #include "rdp_plugin.h"
 #include "rdp_file.h"
 
-gboolean remmina_rdp_file_import_test(const gchar* from_file)
+gboolean remmina_rdp_file_import_test(const gchar * from_file)
 {
 	TRACE_CALL("remmina_rdp_file_import_test");
-	gchar* ext;
+	gchar *ext;
 
 	ext = strrchr(from_file, '.');
 
@@ -58,169 +58,116 @@ gboolean remmina_rdp_file_import_test(const gchar* from_file)
 	return FALSE;
 }
 
-static void remmina_rdp_file_import_field(RemminaFile* remminafile, const gchar* key, const gchar* value)
+static void remmina_rdp_file_import_field(RemminaFile * remminafile, const gchar * key, const gchar * value)
 {
 	TRACE_CALL("remmina_rdp_file_import_field");
-	if (g_strcmp0(key, "desktopwidth") == 0)
-	{
+	if (g_strcmp0(key, "desktopwidth") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "resolution_width", value);
-	}
-	else if (g_strcmp0(key, "desktopheight") == 0)
-	{
+	} else if (g_strcmp0(key, "desktopheight") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "resolution_height", value);
-	}
-	else if (g_strcmp0(key, "session bpp") == 0)
-	{
+	} else if (g_strcmp0(key, "session bpp") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "colordepth", value);
-	}
-	else if (g_strcmp0(key, "keyboardhook") == 0)
-	{
-		remmina_plugin_service->file_set_int(remminafile, "keyboard_grab", (atoi (value) == 1));
-	}
-	else if (g_strcmp0(key, "full address") == 0)
-	{
+	} else if (g_strcmp0(key, "keyboardhook") == 0) {
+		remmina_plugin_service->file_set_int(remminafile, "keyboard_grab", (atoi(value) == 1));
+	} else if (g_strcmp0(key, "full address") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "server", value);
-	}
-	else if (g_strcmp0(key, "audiomode") == 0)
-	{
-		switch (atoi(value))
-		{
-			case 0:
-				remmina_plugin_service->file_set_string(remminafile, "sound", "local");
-				break;
-			case 1:
-				remmina_plugin_service->file_set_string(remminafile, "sound", "remote");
-				break;
+	} else if (g_strcmp0(key, "audiomode") == 0) {
+		switch (atoi(value)) {
+		case 0:
+			remmina_plugin_service->file_set_string(remminafile, "sound", "local");
+			break;
+		case 1:
+			remmina_plugin_service->file_set_string(remminafile, "sound", "remote");
+			break;
 		}
-	}
-	else if (g_strcmp0(key, "microphone") == 0)
-	{
-		remmina_plugin_service->file_set_int(remminafile, "microphone", (atoi (value) == 1));
-    }
-	else if (g_strcmp0(key, "redirectprinters") == 0)
-	{
-		remmina_plugin_service->file_set_int(remminafile, "shareprinter", (atoi (value) == 1));
-	}
-	else if (g_strcmp0(key, "redirectsmartcard") == 0)
-	{
-		remmina_plugin_service->file_set_int(remminafile, "sharesmartcard", (atoi (value) == 1));
-	}
-	else if (g_strcmp0(key, "redirectclipboard") == 0)
-	{
-		remmina_plugin_service->file_set_int(remminafile, "disableclipboard", (atoi (value) != 1));
-	}
-	else if (g_strcmp0(key, "alternate shell") == 0)
-	{
+	} else if (g_strcmp0(key, "microphone") == 0) {
+		remmina_plugin_service->file_set_int(remminafile, "microphone", (atoi(value) == 1));
+	} else if (g_strcmp0(key, "redirectprinters") == 0) {
+		remmina_plugin_service->file_set_int(remminafile, "shareprinter", (atoi(value) == 1));
+	} else if (g_strcmp0(key, "redirectsmartcard") == 0) {
+		remmina_plugin_service->file_set_int(remminafile, "sharesmartcard", (atoi(value) == 1));
+	} else if (g_strcmp0(key, "redirectclipboard") == 0) {
+		remmina_plugin_service->file_set_int(remminafile, "disableclipboard", (atoi(value) != 1));
+	} else if (g_strcmp0(key, "alternate shell") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "exec", value);
-	}
-	else if (g_strcmp0(key, "shell working directory") == 0)
-	{
+	} else if (g_strcmp0(key, "shell working directory") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "execpath", value);
-	}
-	else if (g_strcmp0(key, "loadbalanceinfo") == 0)
-	{
+	} else if (g_strcmp0(key, "loadbalanceinfo") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "loadbalanceinfo", value);
-	}
-	else if (g_strcmp0(key, "gatewayhostname") == 0)
-	{
+	} else if (g_strcmp0(key, "gatewayhostname") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "gateway_server", value);
-	}
-	else if (g_strcmp0(key, "gatewayusagemethod") == 0)
-	{
+	} else if (g_strcmp0(key, "gatewayusagemethod") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "gatewayusagemethod", value);
-	}
-	else if (g_strcmp0(key, "gatewaycredentialssource") == 0)
-	{
+	} else if (g_strcmp0(key, "gatewaycredentialssource") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "gatewaycredentialssource", value);
-	}
-	else if (g_strcmp0(key, "gatewayprofileusagemethod") == 0)
-	{
+	} else if (g_strcmp0(key, "gatewayprofileusagemethod") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "gatewayprofileusagemethod", value);
 	}
 	/* tsclient fields, import only */
-	else if (g_strcmp0(key, "client hostname") == 0)
-	{
+	else if (g_strcmp0(key, "client hostname") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "clientname", value);
-	}
-	else if (g_strcmp0(key, "domain") == 0)
-	{
+	} else if (g_strcmp0(key, "domain") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "domain", value);
-	}
-	else if (g_strcmp0(key, "username") == 0)
-	{
+	} else if (g_strcmp0(key, "username") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "username", value);
-	}
-	else if (g_strcmp0(key, "password") == 0)
-	{
+	} else if (g_strcmp0(key, "password") == 0) {
 		remmina_plugin_service->file_set_string(remminafile, "password", value);
 	}
 }
 
-static RemminaFile* remmina_rdp_file_import_channel(GIOChannel* channel)
+static RemminaFile *remmina_rdp_file_import_channel(GIOChannel * channel)
 {
 	TRACE_CALL("remmina_rdp_file_import_channel");
-	gchar* p;
-	const gchar* enc;
-	gchar* line = NULL;
-	GError* error = NULL;
+	gchar *p;
+	const gchar *enc;
+	gchar *line = NULL;
+	GError *error = NULL;
 	gsize bytes_read = 0;
-	RemminaFile* remminafile;
+	RemminaFile *remminafile;
 	guchar magic[2] = { 0 };
 
-	if (g_io_channel_set_encoding(channel, NULL, &error) != G_IO_STATUS_NORMAL)
-	{
+	if (g_io_channel_set_encoding(channel, NULL, &error) != G_IO_STATUS_NORMAL) {
 		g_print("g_io_channel_set_encoding: %s\n", error->message);
 		return NULL;
 	}
 
 	/* Try to detect the UTF-16 encoding */
-	if (g_io_channel_read_chars(channel, (gchar*) magic, 2, &bytes_read, &error) != G_IO_STATUS_NORMAL)
-	{
+	if (g_io_channel_read_chars(channel, (gchar *) magic, 2, &bytes_read, &error) != G_IO_STATUS_NORMAL) {
 		g_print("g_io_channel_read_chars: %s\n", error->message);
 		return NULL;
 	}
 
-	if (magic[0] == 0xFF && magic[1] == 0xFE)
-	{
+	if (magic[0] == 0xFF && magic[1] == 0xFE) {
 		enc = "UTF-16LE";
-	}
-	else if (magic[0] == 0xFE && magic[1] == 0xFF)
-	{
+	} else if (magic[0] == 0xFE && magic[1] == 0xFF) {
 		enc = "UTF-16BE";
-	}
-	else
-	{
+	} else {
 		enc = "UTF-8";
-		if (g_io_channel_seek_position(channel, 0, G_SEEK_SET, &error) != G_IO_STATUS_NORMAL)
-		{
+		if (g_io_channel_seek_position(channel, 0, G_SEEK_SET, &error) != G_IO_STATUS_NORMAL) {
 			g_print("g_io_channel_seek: failed\n");
 			return NULL;
 		}
 	}
 
-	if (g_io_channel_set_encoding(channel, enc, &error) != G_IO_STATUS_NORMAL)
-	{
+	if (g_io_channel_set_encoding(channel, enc, &error) != G_IO_STATUS_NORMAL) {
 		g_print("g_io_channel_set_encoding: %s\n", error->message);
 		return NULL;
 	}
 
 	remminafile = remmina_plugin_service->file_new();
 
-	while (g_io_channel_read_line(channel, &line, NULL, &bytes_read, &error) == G_IO_STATUS_NORMAL)
-	{
+	while (g_io_channel_read_line(channel, &line, NULL, &bytes_read, &error) == G_IO_STATUS_NORMAL) {
 		if (line == NULL)
 			break;
 
 		line[bytes_read] = '\0';
 		p = strchr(line, ':');
 
-		if (p)
-		{
+		if (p) {
 			*p++ = '\0';
-			p = strchr (p, ':');
+			p = strchr(p, ':');
 
-			if (p)
-			{
+			if (p) {
 				p++;
 				remmina_rdp_file_import_field(remminafile, line, p);
 			}
@@ -230,33 +177,31 @@ static RemminaFile* remmina_rdp_file_import_channel(GIOChannel* channel)
 	}
 
 	if (remmina_plugin_service->file_get_int(remminafile, "resolution_width", 0) > 0 &&
-		remmina_plugin_service->file_get_int(remminafile, "resolution_height", 0) > 0)
-	{
+	    remmina_plugin_service->file_get_int(remminafile, "resolution_height", 0) > 0) {
 		p = g_strdup_printf("%ix%i",
-			remmina_plugin_service->file_get_int(remminafile, "resolution_width", 0),
-			remmina_plugin_service->file_get_int(remminafile, "resolution_height", 0));
+				    remmina_plugin_service->file_get_int(remminafile, "resolution_width", 0),
+				    remmina_plugin_service->file_get_int(remminafile, "resolution_height", 0));
 		remmina_plugin_service->file_set_string(remminafile, "resolution", p);
 		g_free(p);
 	}
 
 	remmina_plugin_service->file_set_string(remminafile, "name",
-		remmina_plugin_service->file_get_string(remminafile, "server"));
+						remmina_plugin_service->file_get_string(remminafile, "server"));
 	remmina_plugin_service->file_set_string(remminafile, "protocol", "RDP");
 
 	return remminafile;
 }
 
-RemminaFile* remmina_rdp_file_import(const gchar* from_file)
+RemminaFile *remmina_rdp_file_import(const gchar * from_file)
 {
 	TRACE_CALL("remmina_rdp_file_import");
-	GIOChannel* channel;
-	GError* error = NULL;
-	RemminaFile* remminafile;
+	GIOChannel *channel;
+	GError *error = NULL;
+	RemminaFile *remminafile;
 
 	channel = g_io_channel_new_file(from_file, "r", &error);
 
-	if (channel == NULL)
-	{
+	if (channel == NULL) {
 		g_print("Failed to import %s: %s\n", from_file, error->message);
 		return NULL;
 	}
@@ -267,7 +212,7 @@ RemminaFile* remmina_rdp_file_import(const gchar* from_file)
 	return remminafile;
 }
 
-gboolean remmina_rdp_file_export_test(RemminaFile* remminafile)
+gboolean remmina_rdp_file_export_test(RemminaFile * remminafile)
 {
 	TRACE_CALL("remmina_rdp_file_export_test");
 	if (g_strcmp0(remmina_plugin_service->file_get_string(remminafile, "protocol"), "RDP") == 0)
@@ -276,21 +221,19 @@ gboolean remmina_rdp_file_export_test(RemminaFile* remminafile)
 	return FALSE;
 }
 
-gboolean remmina_rdp_file_export_channel(RemminaFile* remminafile, FILE* fp)
+gboolean remmina_rdp_file_export_channel(RemminaFile * remminafile, FILE * fp)
 {
 	TRACE_CALL("remmina_rdp_file_export_channel");
-	gchar* s;
-	gchar* p;
-	const gchar* cs;
+	gchar *s;
+	gchar *p;
+	const gchar *cs;
 
 	fprintf(fp, "screen mode id:i:2\r\n");
 	cs = remmina_plugin_service->file_get_string(remminafile, "resolution");
-	if (cs)
-	{
+	if (cs) {
 		s = g_strdup(cs);
 		p = strchr(s, 'x');
-		if (p)
-		{
+		if (p) {
 			*p++ = '\0';
 			fprintf(fp, "desktopwidth:i:%s\r\n", s);
 			fprintf(fp, "desktopheight:i:%s\r\n", p);
@@ -312,16 +255,19 @@ gboolean remmina_rdp_file_export_channel(RemminaFile* remminafile, FILE* fp)
 	fprintf(fp, "disable cursor setting:i:0\r\n");
 	fprintf(fp, "bitmapcachepersistenable:i:1\r\n");
 	cs = remmina_plugin_service->file_get_string(remminafile, "server");
-	fprintf(fp, "full address:s:%s\r\n", cs ? cs : "" );
+	fprintf(fp, "full address:s:%s\r\n", cs ? cs : "");
 	if (g_strcmp0(remmina_plugin_service->file_get_string(remminafile, "sound"), "local") == 0)
 		fprintf(fp, "audiomode:i:0\r\n");
 	else if (g_strcmp0(remmina_plugin_service->file_get_string(remminafile, "sound"), "remote") == 0)
 		fprintf(fp, "audiomode:i:1\r\n");
 	else
 		fprintf(fp, "audiomode:i:2\r\n");
-	fprintf(fp, "microphone:i:%i\r\n", remmina_plugin_service->file_get_int(remminafile, "microphone", FALSE) ? 1 : 0);
-	fprintf(fp, "redirectprinters:i:%i\r\n", remmina_plugin_service->file_get_int(remminafile, "shareprinter", FALSE) ? 1 : 0);
-	fprintf(fp, "redirectsmartcard:i:%i\r\n", remmina_plugin_service->file_get_int(remminafile, "sharesmartcard", FALSE) ? 1 : 0);
+	fprintf(fp, "microphone:i:%i\r\n",
+		remmina_plugin_service->file_get_int(remminafile, "microphone", FALSE) ? 1 : 0);
+	fprintf(fp, "redirectprinters:i:%i\r\n",
+		remmina_plugin_service->file_get_int(remminafile, "shareprinter", FALSE) ? 1 : 0);
+	fprintf(fp, "redirectsmartcard:i:%i\r\n",
+		remmina_plugin_service->file_get_int(remminafile, "sharesmartcard", FALSE) ? 1 : 0);
 	fprintf(fp, "redirectcomports:i:0\r\n");
 	fprintf(fp, "redirectsmartcards:i:0\r\n");
 	fprintf(fp, "redirectclipboard:i:1\r\n");
@@ -346,28 +292,24 @@ gboolean remmina_rdp_file_export_channel(RemminaFile* remminafile, FILE* fp)
 	return TRUE;
 }
 
-gboolean remmina_rdp_file_export(RemminaFile* remminafile, const gchar* to_file)
+gboolean remmina_rdp_file_export(RemminaFile * remminafile, const gchar * to_file)
 {
 	TRACE_CALL("remmina_rdp_file_export");
-	FILE* fp;
-	gchar* p;
+	FILE *fp;
+	gchar *p;
 	gboolean ret;
 
-	p = strrchr (to_file, '.');
+	p = strrchr(to_file, '.');
 
-	if (p && (g_strcmp0(p + 1, "rdp") == 0 || g_strcmp0(p + 1, "RDP") == 0))
-	{
+	if (p && (g_strcmp0(p + 1, "rdp") == 0 || g_strcmp0(p + 1, "RDP") == 0)) {
 		p = g_strdup(to_file);
-	}
-	else
-	{
+	} else {
 		p = g_strdup_printf("%s.rdp", to_file);
 	}
 
 	fp = g_fopen(p, "w+");
 
-	if (fp == NULL)
-	{
+	if (fp == NULL) {
 		g_print("Failed to export %s\n", p);
 		g_free(p);
 		return FALSE;
@@ -379,4 +321,3 @@ gboolean remmina_rdp_file_export(RemminaFile* remminafile, const gchar* to_file)
 
 	return ret;
 }
-

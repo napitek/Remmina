@@ -39,13 +39,11 @@
  * Remmina Preferences Dialog
  */
 
-typedef struct _RemminaPrefDialogPriv
-{
+typedef struct _RemminaPrefDialogPriv {
 	GtkWidget *resolutions_list;
 } RemminaPrefDialogPriv;
 
-typedef struct _RemminaPrefDialog
-{
+typedef struct _RemminaPrefDialog {
 	GtkBuilder *builder;
 	GtkDialog *dialog;
 	GtkNotebook *notebook_preferences;
@@ -105,20 +103,17 @@ typedef struct _RemminaPrefDialog
 	RemminaPrefDialogPriv *priv;
 } RemminaPrefDialog;
 
-enum
-{
+enum {
 	REMMINA_PREF_OPTIONS_TAB = 0,
 	REMMINA_PREF_APPEARANCE = 1,
 	REMMINA_PREF_APPLET_TAB = 2
 };
 
 G_BEGIN_DECLS
-
 /* RemminaPrefDialog instance */
-GtkDialog* remmina_pref_dialog_new(gint default_tab, GtkWindow *parent);
+    GtkDialog * remmina_pref_dialog_new(gint default_tab, GtkWindow * parent);
 /* Get the current PrefDialog or NULL if not initialized */
-GtkDialog* remmina_pref_dialog_get_dialog(void);
+GtkDialog *remmina_pref_dialog_get_dialog(void);
 
 G_END_DECLS
-
-#endif  /* __REMMINAPREFDIALOG_H__  */
+#endif				/* __REMMINAPREFDIALOG_H__  */

@@ -57,12 +57,12 @@ struct mpchanger_params {
 
 	GtkEntry *eGroup, *eUsername, *eDomain;
 	GtkEntry *ePassword1, *ePassword2;
-	GtkListStore* store;
-	GtkDialog* dialog;
-	GtkTreeView* table;
-	GtkButton* btnDoChange;
-	GtkLabel* statusLabel;
-	
+	GtkListStore *store;
+	GtkDialog *dialog;
+	GtkTreeView *table;
+	GtkButton *btnDoChange;
+	GtkLabel *statusLabel;
+
 	GtkTreeIter iter;
 	int changed_passwords_count;
 	guint sid;
@@ -78,35 +78,35 @@ enum {
 	NUM_COLS
 };
 
-static gboolean remmina_mpchange_fieldcompare(const gchar *needle, const gchar *haystack, int *matchcount)
+static gboolean remmina_mpchange_fieldcompare(const gchar * needle, const gchar * haystack, int *matchcount)
 {
 	TRACE_CALL("remmina_mpchange_fieldcompare");
 
 	if (needle[0] == 0) {
-		(*matchcount) ++;
+		(*matchcount)++;
 		return TRUE;
 	}
 
-	if (strcasecmp(needle,haystack) != 0)
+	if (strcasecmp(needle, haystack) != 0)
 		return FALSE;
 
-	(*matchcount) ++;
+	(*matchcount)++;
 	return TRUE;
 
 }
 
-static void remmina_mpchange_file_list_callback(RemminaFile *remminafile, gpointer user_data)
+static void remmina_mpchange_file_list_callback(RemminaFile * remminafile, gpointer user_data)
 {
 	TRACE_CALL("remmina_mpchange_file_list_callback");
-	GtkListStore* store;
+	GtkListStore *store;
 	GtkTreeIter iter;
 	int matchcount;
 	const gchar *username, *domain, *group;
 
-	gchar* s;
-	struct mpchanger_params* mpcp;
+	gchar *s;
+	struct mpchanger_params *mpcp;
 
-	mpcp = (struct mpchanger_params*)user_data;
+	mpcp = (struct mpchanger_params *) user_data;
 	store = GTK_LIST_STORE(mpcp->store);
 
 
@@ -135,35 +135,32 @@ static void remmina_mpchange_file_list_callback(RemminaFile *remminafile, gpoint
 	s = g_strdup_printf("%s\\%s", domain, username);
 
 	gtk_list_store_set(store, &iter,
-		COL_F, matchcount >= 3 ? TRUE : FALSE,
-		COL_NAME, remmina_file_get_string(remminafile, "name"),
-		COL_GROUP, group,
-		COL_USERNAME,   s,
-		COL_FILENAME, remminafile->filename,
-		-1);
+			   COL_F, matchcount >= 3 ? TRUE : FALSE,
+			   COL_NAME, remmina_file_get_string(remminafile, "name"),
+			   COL_GROUP, group, COL_USERNAME, s, COL_FILENAME, remminafile->filename, -1);
 	g_free(s);
 
 }
 
-static void remmina_mpchange_checkbox_toggle(GtkCellRendererToggle *cell, gchar *path_string, gpointer user_data)
+static void remmina_mpchange_checkbox_toggle(GtkCellRendererToggle * cell, gchar * path_string, gpointer user_data)
 {
 	TRACE_CALL("remmina_mpchange_checkbox_toggle");
 	GtkTreeIter iter;
-	struct mpchanger_params* mpcp = (struct mpchanger_params*)user_data;
+	struct mpchanger_params *mpcp = (struct mpchanger_params *) user_data;
 	GtkTreePath *path;
 
 	gboolean a = gtk_cell_renderer_toggle_get_active(cell);
 	path = gtk_tree_path_new_from_string(path_string);
 	gtk_tree_model_get_iter(GTK_TREE_MODEL(mpcp->store), &iter, path);
-	gtk_tree_path_free (path);
+	gtk_tree_path_free(path);
 	gtk_list_store_set(mpcp->store, &iter, COL_F, !a, -1);
 }
 
-static void remmina_mpchange_dochange(gchar* fname, struct mpchanger_params* mpcp)
+static void remmina_mpchange_dochange(gchar * fname, struct mpchanger_params *mpcp)
 {
 	TRACE_CALL("remmina_mpchange_dochange");
 
-	RemminaFile* remminafile;
+	RemminaFile *remminafile;
 
 	remminafile = remmina_file_load(fname);
 	remmina_file_store_secret_plugin_password(remminafile, "password", mpcp->password);
@@ -172,7 +169,7 @@ static void remmina_mpchange_dochange(gchar* fname, struct mpchanger_params* mpc
 
 }
 
-static void enable_inputs(struct mpchanger_params* mpcp, gboolean ena)
+static void enable_inputs(struct mpchanger_params *mpcp, gboolean ena)
 {
 	gtk_widget_set_sensitive(GTK_WIDGET(mpcp->eGroup), ena);
 	gtk_widget_set_sensitive(GTK_WIDGET(mpcp->eUsername), ena);
@@ -186,35 +183,32 @@ static void enable_inputs(struct mpchanger_params* mpcp, gboolean ena)
 static gboolean changenext(gpointer user_data)
 {
 	TRACE_CALL("changenext");
-	struct mpchanger_params* mpcp = (struct mpchanger_params*)user_data;
-	gchar* fname;
+	struct mpchanger_params *mpcp = (struct mpchanger_params *) user_data;
+	gchar *fname;
 	gboolean sel;
-			
+
 	gtk_tree_model_get(GTK_TREE_MODEL(mpcp->store), &mpcp->iter, COL_F, &sel, -1);
 	gtk_tree_model_get(GTK_TREE_MODEL(mpcp->store), &mpcp->iter, COL_FILENAME, &fname, -1);
 	if (sel) {
 		remmina_mpchange_dochange(fname, mpcp);
 	}
 	g_free(fname);
-	
-	if (gtk_tree_model_iter_next(GTK_TREE_MODEL(mpcp->store), &mpcp->iter))
-	{
+
+	if (gtk_tree_model_iter_next(GTK_TREE_MODEL(mpcp->store), &mpcp->iter)) {
 		return G_SOURCE_CONTINUE;
-	}
-	else
-	{
+	} else {
 		gtk_dialog_response(mpcp->dialog, 1);
 		mpcp->sid = 0;
 		return G_SOURCE_REMOVE;
 	}
 }
 
-static void remmina_mpchange_dochange_clicked(GtkButton *btn, gpointer user_data)
+static void remmina_mpchange_dochange_clicked(GtkButton * btn, gpointer user_data)
 {
 	TRACE_CALL("remmina_mpchange_dochange_clicked");
-	struct mpchanger_params* mpcp = (struct mpchanger_params*)user_data;
+	struct mpchanger_params *mpcp = (struct mpchanger_params *) user_data;
 	const gchar *passwd1, *passwd2;
-	
+
 	if (mpcp->searchentrychange_timeout_source_id) {
 		g_source_remove(mpcp->searchentrychange_timeout_source_id);
 		mpcp->searchentrychange_timeout_source_id = 0;
@@ -229,11 +223,10 @@ static void remmina_mpchange_dochange_clicked(GtkButton *btn, gpointer user_data
 	if (g_strcmp0(passwd1, passwd2) != 0) {
 		GtkWidget *msgDialog;
 		msgDialog = gtk_message_dialog_new(GTK_WINDOW(mpcp->dialog),
-                                 GTK_DIALOG_DESTROY_WITH_PARENT,
-                                 GTK_MESSAGE_ERROR,
-                                 GTK_BUTTONS_CLOSE,
-                                 _("The passwords do not match"));
-		gtk_dialog_run(GTK_DIALOG (msgDialog));
+						   GTK_DIALOG_DESTROY_WITH_PARENT,
+						   GTK_MESSAGE_ERROR,
+						   GTK_BUTTONS_CLOSE, _("The passwords do not match"));
+		gtk_dialog_run(GTK_DIALOG(msgDialog));
 		gtk_widget_destroy(msgDialog);
 		return;
 	}
@@ -241,25 +234,25 @@ static void remmina_mpchange_dochange_clicked(GtkButton *btn, gpointer user_data
 	g_free(mpcp->password);
 	mpcp->password = g_strdup(passwd1);
 	mpcp->changed_passwords_count = 0;
-	
+
 	gtk_label_set_text(mpcp->statusLabel, _("Resetting passwords, please wait..."));
-	
+
 	enable_inputs(mpcp, FALSE);
-	mpcp->sid = g_idle_add(changenext, (gpointer)mpcp);
+	mpcp->sid = g_idle_add(changenext, (gpointer) mpcp);
 
 }
 
 static gboolean remmina_mpchange_searchfield_changed_to(gpointer user_data)
 {
 	TRACE_CALL("remmina_mpchange_searchfield_changed_to");
-	struct mpchanger_params *mpcp = (struct mpchanger_params *)user_data;
+	struct mpchanger_params *mpcp = (struct mpchanger_params *) user_data;
 	const gchar *s;
 
 	if (mpcp->searchentrychange_timeout_source_id) {
 		g_source_remove(mpcp->searchentrychange_timeout_source_id);
 		mpcp->searchentrychange_timeout_source_id = 0;
 	}
-	
+
 	s = gtk_entry_get_text(mpcp->eGroup);
 	g_free(mpcp->group);
 	mpcp->group = g_strdup(s);
@@ -275,36 +268,38 @@ static gboolean remmina_mpchange_searchfield_changed_to(gpointer user_data)
 	if (mpcp->store != NULL) {
 		gtk_tree_view_set_model(mpcp->table, NULL);
 	}
-	mpcp->store = gtk_list_store_new(NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	
+	mpcp->store =
+	    gtk_list_store_new(NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+
 	if (mpcp->group[0] != 0 || mpcp->domain[0] != 0 || mpcp->username[0] != 0)
-		remmina_file_manager_iterate((GFunc) remmina_mpchange_file_list_callback, (gpointer)mpcp);
+		remmina_file_manager_iterate((GFunc) remmina_mpchange_file_list_callback, (gpointer) mpcp);
 
 	gtk_tree_view_set_model(mpcp->table, GTK_TREE_MODEL(mpcp->store));
-	
+
 	return G_SOURCE_CONTINUE;	// Source already remove at the beginning
 
 }
 
-static void remmina_mpchange_searchfield_changed(GtkSearchEntry *se, gpointer user_data)
+static void remmina_mpchange_searchfield_changed(GtkSearchEntry * se, gpointer user_data)
 {
 	TRACE_CALL("remmina_mpchange_searchfield_changed");
-	struct mpchanger_params *mpcp = (struct mpchanger_params *)user_data;
-	
+	struct mpchanger_params *mpcp = (struct mpchanger_params *) user_data;
+
 	if (mpcp->searchentrychange_timeout_source_id) {
 		g_source_remove(mpcp->searchentrychange_timeout_source_id);
 		mpcp->searchentrychange_timeout_source_id = 0;
 	}
-		
-	mpcp->searchentrychange_timeout_source_id = g_timeout_add(500, remmina_mpchange_searchfield_changed_to, user_data);
+
+	mpcp->searchentrychange_timeout_source_id =
+	    g_timeout_add(500, remmina_mpchange_searchfield_changed_to, user_data);
 }
 
 
-static void remmina_mpchange_stopsearch(GtkSearchEntry *entry, gpointer user_data)
+static void remmina_mpchange_stopsearch(GtkSearchEntry * entry, gpointer user_data)
 {
 	TRACE_CALL("remmina_mpchange_stopsearch");
 	/* The stop-search signal is emitted when pressing ESC on a GtkSearchEntry. We end the dialog. */
-	struct mpchanger_params *mpcp = (struct mpchanger_params *)user_data;
+	struct mpchanger_params *mpcp = (struct mpchanger_params *) user_data;
 	gtk_dialog_response(mpcp->dialog, 1);
 }
 
@@ -312,15 +307,14 @@ static gboolean remmina_file_multipasswd_changer_mt(gpointer d)
 {
 	TRACE_CALL("remmina_file_multipasswd_changer_mt");
 	struct mpchanger_params *mpcp = d;
-	GtkBuilder* bu;
-	GtkDialog* dialog;
-	GtkWindow* mainwindow;
+	GtkBuilder *bu;
+	GtkDialog *dialog;
+	GtkWindow *mainwindow;
 	GtkCellRendererToggle *toggle;
 
 
 	/* The multiple passowrd changer works only when a secret plugin is available */
-	if (remmina_plugin_manager_get_secret_plugin() == NULL)
-	{
+	if (remmina_plugin_manager_get_secret_plugin() == NULL) {
 		remmina_log_printf("The multi password changer does not work without a secret plugin\n");
 		return FALSE;
 	}
@@ -341,23 +335,27 @@ static gboolean remmina_file_multipasswd_changer_mt(gpointer d)
 
 	mpcp->eGroup = GTK_ENTRY(GET_DIALOG_OBJECT("groupEntry"));
 	gtk_entry_set_text(mpcp->eGroup, mpcp->group);
-	g_signal_connect(G_OBJECT(mpcp->eGroup), "changed", G_CALLBACK(remmina_mpchange_searchfield_changed), (gpointer)mpcp);
-	g_signal_connect(G_OBJECT(mpcp->eGroup), "stop-search", G_CALLBACK(remmina_mpchange_stopsearch), (gpointer)mpcp);
+	g_signal_connect(G_OBJECT(mpcp->eGroup), "changed", G_CALLBACK(remmina_mpchange_searchfield_changed),
+			 (gpointer) mpcp);
+	g_signal_connect(G_OBJECT(mpcp->eGroup), "stop-search", G_CALLBACK(remmina_mpchange_stopsearch),
+			 (gpointer) mpcp);
 
 	mpcp->eUsername = GTK_ENTRY(GET_DIALOG_OBJECT("usernameEntry"));
 	gtk_entry_set_text(mpcp->eUsername, mpcp->username);
-	g_signal_connect(G_OBJECT(mpcp->eUsername), "changed", G_CALLBACK(remmina_mpchange_searchfield_changed), (gpointer)mpcp);
+	g_signal_connect(G_OBJECT(mpcp->eUsername), "changed", G_CALLBACK(remmina_mpchange_searchfield_changed),
+			 (gpointer) mpcp);
 
 	mpcp->eDomain = GTK_ENTRY(GET_DIALOG_OBJECT("domainEntry"));
 	gtk_entry_set_text(mpcp->eDomain, mpcp->domain);
-	g_signal_connect(G_OBJECT(mpcp->eDomain), "changed", G_CALLBACK(remmina_mpchange_searchfield_changed), (gpointer)mpcp);
+	g_signal_connect(G_OBJECT(mpcp->eDomain), "changed", G_CALLBACK(remmina_mpchange_searchfield_changed),
+			 (gpointer) mpcp);
 
 	mpcp->ePassword1 = GTK_ENTRY(GET_DIALOG_OBJECT("password1Entry"));
 	gtk_entry_set_text(mpcp->ePassword1, mpcp->password);
 
 	mpcp->ePassword2 = GTK_ENTRY(GET_DIALOG_OBJECT("password2Entry"));
 	gtk_entry_set_text(mpcp->ePassword2, mpcp->password);
-	
+
 	mpcp->statusLabel = GTK_LABEL(GET_DIALOG_OBJECT("statusLabel"));
 
 
@@ -366,13 +364,13 @@ static gboolean remmina_file_multipasswd_changer_mt(gpointer d)
 	mpcp->table = GTK_TREE_VIEW(GET_DIALOG_OBJECT("profchangelist"));
 
 	/* Fire a fake searchfield changed, so a new list store is created */
-	remmina_mpchange_searchfield_changed(NULL, (gpointer)mpcp);
+	remmina_mpchange_searchfield_changed(NULL, (gpointer) mpcp);
 
 	toggle = GTK_CELL_RENDERER_TOGGLE(GET_DIALOG_OBJECT("cellrenderertoggle1"));
-	g_signal_connect(G_OBJECT(toggle), "toggled", G_CALLBACK(remmina_mpchange_checkbox_toggle), (gpointer)mpcp);
+	g_signal_connect(G_OBJECT(toggle), "toggled", G_CALLBACK(remmina_mpchange_checkbox_toggle), (gpointer) mpcp);
 
 	mpcp->btnDoChange = GTK_BUTTON(GET_DIALOG_OBJECT("btnDoChange"));
-	g_signal_connect(mpcp->btnDoChange, "clicked", G_CALLBACK(remmina_mpchange_dochange_clicked), (gpointer)mpcp);
+	g_signal_connect(mpcp->btnDoChange, "clicked", G_CALLBACK(remmina_mpchange_dochange_clicked), (gpointer) mpcp);
 
 #if GTK_CHECK_VERSION(3, 16, 0)
 	GList *fc = NULL;
@@ -386,28 +384,27 @@ static gboolean remmina_file_multipasswd_changer_mt(gpointer d)
 
 	gtk_dialog_run(dialog);
 	gtk_widget_destroy(GTK_WIDGET(dialog));
-	
+
 	if (mpcp->sid) {
 		g_source_remove(mpcp->sid);
 		mpcp->sid = 0;
 	}
-	
+
 	if (mpcp->searchentrychange_timeout_source_id) {
 		g_source_remove(mpcp->searchentrychange_timeout_source_id);
 		mpcp->searchentrychange_timeout_source_id = 0;
 	}
-		
+
 	if (mpcp->changed_passwords_count) {
 		GtkWidget *msgDialog;
 		msgDialog = gtk_message_dialog_new(GTK_WINDOW(mpcp->dialog),
-                                 GTK_DIALOG_DESTROY_WITH_PARENT,
-                                 GTK_MESSAGE_INFO,
-                                 GTK_BUTTONS_OK,
-                                 _("%d password changed."), mpcp->changed_passwords_count);
-		gtk_dialog_run(GTK_DIALOG (msgDialog));
+						   GTK_DIALOG_DESTROY_WITH_PARENT,
+						   GTK_MESSAGE_INFO,
+						   GTK_BUTTONS_OK,
+						   _("%d password changed."), mpcp->changed_passwords_count);
+		gtk_dialog_run(GTK_DIALOG(msgDialog));
 		gtk_widget_destroy(msgDialog);
 	}
-	
 	// Free data
 	g_free(mpcp->username);
 	g_free(mpcp->password);
@@ -419,7 +416,8 @@ static gboolean remmina_file_multipasswd_changer_mt(gpointer d)
 
 
 void
-remmina_mpchange_schedule(gboolean has_domain, const gchar *group, const gchar *domain, const gchar *username, const gchar *password)
+remmina_mpchange_schedule(gboolean has_domain, const gchar * group, const gchar * domain, const gchar * username,
+			  const gchar * password)
 {
 	// We could also be called in a subthread after a successful connection
 	// (not currently implemented)
@@ -434,7 +432,6 @@ remmina_mpchange_schedule(gboolean has_domain, const gchar *group, const gchar *
 	mpcp->password = g_strdup(password);
 	mpcp->domain = g_strdup(domain);
 	mpcp->group = g_strdup(group);
-	gdk_threads_add_idle(remmina_file_multipasswd_changer_mt, (gpointer)mpcp);
+	gdk_threads_add_idle(remmina_file_multipasswd_changer_mt, (gpointer) mpcp);
 
 }
-

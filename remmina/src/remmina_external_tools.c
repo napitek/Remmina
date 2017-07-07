@@ -41,9 +41,10 @@
 #include "remmina_external_tools.h"
 #include "remmina/remmina_trace_calls.h"
 
-static gboolean remmina_external_tools_launcher(const gchar* filename, const gchar* scriptname, const gchar* shortname);
+static gboolean remmina_external_tools_launcher(const gchar * filename, const gchar * scriptname,
+						const gchar * shortname);
 
-static void view_popup_menu_onDoSomething (GtkWidget *menuitem, gpointer userdata)
+static void view_popup_menu_onDoSomething(GtkWidget * menuitem, gpointer userdata)
 {
 	TRACE_CALL("view_popup_menu_onDoSomething");
 	gchar *remminafilename = g_object_get_data(G_OBJECT(menuitem), "remminafilename");
@@ -53,14 +54,14 @@ static void view_popup_menu_onDoSomething (GtkWidget *menuitem, gpointer userdat
 	remmina_external_tools_launcher(remminafilename, scriptfilename, scriptshortname);
 }
 
-gboolean remmina_external_tools_from_filename(RemminaMain *remminamain, gchar* remminafilename)
+gboolean remmina_external_tools_from_filename(RemminaMain * remminamain, gchar * remminafilename)
 {
 	TRACE_CALL("remmina_external_tools_from_filename");
 	GtkWidget *menu, *menuitem;
 	gchar dirname[MAX_PATH_LEN];
 	gchar filename[MAX_PATH_LEN];
-	GDir* dir;
-	const gchar* name;
+	GDir *dir;
+	const gchar *name;
 
 	strcpy(dirname, REMMINA_EXTERNAL_TOOLS_DIR);
 	dir = g_dir_open(dirname, 0, NULL);
@@ -70,8 +71,7 @@ gboolean remmina_external_tools_from_filename(RemminaMain *remminamain, gchar* r
 
 	menu = gtk_menu_new();
 
-	while ((name = g_dir_read_name(dir)) != NULL)
-	{
+	while ((name = g_dir_read_name(dir)) != NULL) {
 		if (!g_str_has_prefix(name, "remmina_"))
 			continue;
 		g_snprintf(filename, MAX_PATH_LEN, "%s/%s", dirname, name);
@@ -88,14 +88,15 @@ gboolean remmina_external_tools_from_filename(RemminaMain *remminamain, gchar* r
 	gtk_widget_show_all(menu);
 
 	/* Note: event can be NULL here when called from view_onPopupMenu;
-	*  gdk_event_get_time() accepts a NULL argument
-	*/
-	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,0,0);
+	 *  gdk_event_get_time() accepts a NULL argument
+	 */
+	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 0, 0);
 
 	return TRUE;
 }
 
-static gboolean remmina_external_tools_launcher(const gchar* filename, const gchar* scriptname, const gchar* shortname)
+static gboolean remmina_external_tools_launcher(const gchar * filename, const gchar * scriptname,
+						const gchar * shortname)
 {
 	TRACE_CALL("remmina_external_tools_launcher");
 	RemminaFile *remminafile;
@@ -110,20 +111,16 @@ static gboolean remmina_external_tools_launcher(const gchar* filename, const gch
 	GHashTableIter iter;
 	const gchar *key, *value;
 	g_hash_table_iter_init(&iter, remminafile->settings);
-	while (g_hash_table_iter_next(&iter, (gpointer*) &key, (gpointer*) &value))
-	{
-		envstrlen = strlen(key) +strlen(value) + strlen(env_format) + 1;
+	while (g_hash_table_iter_next(&iter, (gpointer *) & key, (gpointer *) & value)) {
+		envstrlen = strlen(key) + strlen(value) + strlen(env_format) + 1;
 		env = (char *) malloc(envstrlen);
-		if (env == NULL)
-		{
+		if (env == NULL) {
 			return -1;
 		}
 
-		int retval = snprintf(env, envstrlen, env_format, key,value);
-		if (retval > 0 && (size_t) retval <= envstrlen)
-		{
-			if (putenv(env) !=0)
-			{
+		int retval = snprintf(env, envstrlen, env_format, key, value);
+		if (retval > 0 && (size_t) retval <= envstrlen) {
+			if (putenv(env) != 0) {
 				/* If putenv fails, we must free the unused space */
 				free(env);
 			}
@@ -134,20 +131,17 @@ static gboolean remmina_external_tools_launcher(const gchar* filename, const gch
 	const char *term_title_val_prefix = "Remmina external tool";
 	envstrlen = strlen(term_title_key) + strlen(term_title_val_prefix) + strlen(shortname) + 7;
 	env = (char *) malloc(envstrlen);
-	if (env != NULL)
-	{
-		if (snprintf(env, envstrlen, "%s=%s: %s", term_title_key, term_title_val_prefix, shortname) )
-		{
-			if (putenv(env) != 0)
-			{
+	if (env != NULL) {
+		if (snprintf(env, envstrlen, "%s=%s: %s", term_title_key, term_title_val_prefix, shortname)) {
+			if (putenv(env) != 0) {
 				/* If putenv fails, we must free the unused space */
 				free(env);
 			}
 		}
 	}
 
-	const size_t cmdlen = strlen(launcher) +strlen(scriptname) + 2;
-	gchar *cmd = (gchar *)malloc(cmdlen);
+	const size_t cmdlen = strlen(launcher) + strlen(scriptname) + 2;
+	gchar *cmd = (gchar *) malloc(cmdlen);
 	g_snprintf(cmd, cmdlen, "%s %s", launcher, scriptname);
 	system(cmd);
 	free(cmd);

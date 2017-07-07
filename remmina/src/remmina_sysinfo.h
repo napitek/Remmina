@@ -36,12 +36,8 @@
 #ifndef __REMMINASYSINFO_H__
 #define __REMMINASYSINFO_H__
 
-G_BEGIN_DECLS
-
-gboolean remmina_sysinfo_is_appindicator_available(void);
+G_BEGIN_DECLS gboolean remmina_sysinfo_is_appindicator_available(void);
 gchar *remmina_sysinfo_get_gnome_shell_version(void);
 
 G_END_DECLS
-
-#endif  /* __REMMINASYSINFO_H__  */
-
+#endif				/* __REMMINASYSINFO_H__  */

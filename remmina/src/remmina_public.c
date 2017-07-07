@@ -57,8 +57,7 @@
 #include "remmina_public.h"
 #include "remmina/remmina_trace_calls.h"
 
-GtkWidget*
-remmina_public_create_combo_entry(const gchar *text, const gchar *def, gboolean descending)
+GtkWidget *remmina_public_create_combo_entry(const gchar * text, const gchar * def, gboolean descending)
 {
 	TRACE_CALL("remmina_public_create_combo_entry");
 	GtkWidget *combo;
@@ -69,31 +68,24 @@ remmina_public_create_combo_entry(const gchar *text, const gchar *def, gboolean 
 	combo = gtk_combo_box_text_new_with_entry();
 	found = FALSE;
 
-	if (text && text[0] != '\0')
-	{
+	if (text && text[0] != '\0') {
 		buf = g_strdup(text);
 		ptr1 = buf;
 		i = 0;
-		while (ptr1 && *ptr1 != '\0')
-		{
+		while (ptr1 && *ptr1 != '\0') {
 			ptr2 = strchr(ptr1, CHAR_DELIMITOR);
 			if (ptr2)
 				*ptr2++ = '\0';
 
-			if (descending)
-			{
+			if (descending) {
 				gtk_combo_box_text_prepend_text(GTK_COMBO_BOX_TEXT(combo), ptr1);
-				if (!found && g_strcmp0(ptr1, def) == 0)
-				{
+				if (!found && g_strcmp0(ptr1, def) == 0) {
 					gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 					found = TRUE;
 				}
-			}
-			else
-			{
+			} else {
 				gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), ptr1);
-				if (!found && g_strcmp0(ptr1, def) == 0)
-				{
+				if (!found && g_strcmp0(ptr1, def) == 0) {
 					gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
 					found = TRUE;
 				}
@@ -106,16 +98,14 @@ remmina_public_create_combo_entry(const gchar *text, const gchar *def, gboolean 
 		g_free(buf);
 	}
 
-	if (!found && def && def[0] != '\0')
-	{
+	if (!found && def && def[0] != '\0') {
 		gtk_entry_set_text(GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo))), def);
 	}
 
 	return combo;
 }
 
-GtkWidget*
-remmina_public_create_combo_text_d(const gchar *text, const gchar *def, const gchar *empty_choice)
+GtkWidget *remmina_public_create_combo_text_d(const gchar * text, const gchar * def, const gchar * empty_choice)
 {
 	TRACE_CALL("remmina_public_create_combo_text_d");
 	GtkWidget *combo;
@@ -134,7 +124,8 @@ remmina_public_create_combo_text_d(const gchar *text, const gchar *def, const gc
 	return combo;
 }
 
-void remmina_public_load_combo_text_d(GtkWidget *combo, const gchar *text, const gchar *def, const gchar *empty_choice)
+void remmina_public_load_combo_text_d(GtkWidget * combo, const gchar * text, const gchar * def,
+				      const gchar * empty_choice)
 {
 	TRACE_CALL("remmina_public_load_combo_text_d");
 	GtkListStore *store;
@@ -147,8 +138,7 @@ void remmina_public_load_combo_text_d(GtkWidget *combo, const gchar *text, const
 
 	i = 0;
 
-	if (empty_choice)
-	{
+	if (empty_choice) {
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, "", 1, empty_choice, -1);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
@@ -160,8 +150,7 @@ void remmina_public_load_combo_text_d(GtkWidget *combo, const gchar *text, const
 
 	buf = g_strdup(text);
 	ptr1 = buf;
-	while (ptr1 && *ptr1 != '\0')
-	{
+	while (ptr1 && *ptr1 != '\0') {
 		ptr2 = strchr(ptr1, CHAR_DELIMITOR);
 		if (ptr2)
 			*ptr2++ = '\0';
@@ -169,8 +158,7 @@ void remmina_public_load_combo_text_d(GtkWidget *combo, const gchar *text, const
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, ptr1, 1, ptr1, -1);
 
-		if (i == 0 || g_strcmp0(ptr1, def) == 0)
-		{
+		if (i == 0 || g_strcmp0(ptr1, def) == 0) {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i);
 		}
 
@@ -181,27 +169,22 @@ void remmina_public_load_combo_text_d(GtkWidget *combo, const gchar *text, const
 	g_free(buf);
 }
 
-GtkWidget*
-remmina_public_create_combo(gboolean use_icon)
+GtkWidget *remmina_public_create_combo(gboolean use_icon)
 {
 	TRACE_CALL("remmina_public_create_combo");
 	GtkWidget *combo;
 	GtkListStore *store;
 	GtkCellRenderer *renderer;
 
-	if (use_icon)
-	{
+	if (use_icon) {
 		store = gtk_list_store_new(3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-	}
-	else
-	{
+	} else {
 		store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 	}
 	combo = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
 	gtk_widget_set_hexpand(combo, TRUE);
 
-	if (use_icon)
-	{
+	if (use_icon) {
 		renderer = gtk_cell_renderer_pixbuf_new();
 		gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), renderer, FALSE);
 		gtk_cell_layout_add_attribute(GTK_CELL_LAYOUT(combo), renderer, "icon-name", 2);
@@ -215,8 +198,8 @@ remmina_public_create_combo(gboolean use_icon)
 	return combo;
 }
 
-GtkWidget*
-remmina_public_create_combo_map(const gpointer *key_value_list, const gchar *def, gboolean use_icon, const gchar *domain)
+GtkWidget *remmina_public_create_combo_map(const gpointer * key_value_list, const gchar * def, gboolean use_icon,
+					   const gchar * domain)
 {
 	TRACE_CALL("remmina_public_create_combo_map");
 	gint i;
@@ -227,31 +210,27 @@ remmina_public_create_combo_map(const gpointer *key_value_list, const gchar *def
 	combo = remmina_public_create_combo(use_icon);
 	store = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combo)));
 
-	for (i = 0; key_value_list[i]; i += (use_icon ? 3 : 2))
-	{
+	for (i = 0; key_value_list[i]; i += (use_icon ? 3 : 2)) {
 		gtk_list_store_append(store, &iter);
-		gtk_list_store_set(
-		    store,
-		    &iter,
-		    0,
-		    key_value_list[i],
-		    1,
-		    key_value_list[i + 1] && ((char*) key_value_list[i + 1])[0] ?
-		    g_dgettext(domain, key_value_list[i + 1]) : "", -1);
-		if (use_icon)
-		{
+		gtk_list_store_set(store,
+				   &iter,
+				   0,
+				   key_value_list[i],
+				   1,
+				   key_value_list[i + 1] && ((char *) key_value_list[i + 1])[0] ?
+				   g_dgettext(domain, key_value_list[i + 1]) : "", -1);
+		if (use_icon) {
 			gtk_list_store_set(store, &iter, 2, key_value_list[i + 2], -1);
 		}
-		if (i == 0 || g_strcmp0(key_value_list[i], def) == 0)
-		{
+		if (i == 0 || g_strcmp0(key_value_list[i], def) == 0) {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(combo), i / (use_icon ? 3 : 2));
 		}
 	}
 	return combo;
 }
 
-GtkWidget*
-remmina_public_create_combo_mapint(const gpointer *key_value_list, gint def, gboolean use_icon, const gchar *domain)
+GtkWidget *remmina_public_create_combo_mapint(const gpointer * key_value_list, gint def, gboolean use_icon,
+					      const gchar * domain)
 {
 	TRACE_CALL("remmina_public_create_combo_mapint");
 	gchar buf[20];
@@ -259,7 +238,7 @@ remmina_public_create_combo_mapint(const gpointer *key_value_list, gint def, gbo
 	return remmina_public_create_combo_map(key_value_list, buf, use_icon, domain);
 }
 
-void remmina_public_create_group(GtkGrid *table, const gchar *group, gint row, gint rows, gint cols)
+void remmina_public_create_group(GtkGrid * table, const gchar * group, gint row, gint rows, gint cols)
 {
 	TRACE_CALL("remmina_public_create_group");
 	GtkWidget *widget;
@@ -267,8 +246,8 @@ void remmina_public_create_group(GtkGrid *table, const gchar *group, gint row, g
 
 	widget = gtk_label_new(NULL);
 	gtk_widget_show(widget);
-	gtk_widget_set_halign (GTK_WIDGET(widget), GTK_ALIGN_START);
-	gtk_widget_set_valign (GTK_WIDGET(widget), GTK_ALIGN_CENTER);
+	gtk_widget_set_halign(GTK_WIDGET(widget), GTK_ALIGN_START);
+	gtk_widget_set_valign(GTK_WIDGET(widget), GTK_ALIGN_CENTER);
 	str = g_markup_printf_escaped("<b>%s</b>", group);
 	gtk_label_set_markup(GTK_LABEL(widget), str);
 	g_free(str);
@@ -279,16 +258,14 @@ void remmina_public_create_group(GtkGrid *table, const gchar *group, gint row, g
 	gtk_grid_attach(GTK_GRID(table), widget, 0, row + 1, 1, 1);
 }
 
-gchar*
-remmina_public_combo_get_active_text(GtkComboBox *combo)
+gchar *remmina_public_combo_get_active_text(GtkComboBox * combo)
 {
 	TRACE_CALL("remmina_public_combo_get_active_text");
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	gchar *s;
 
-	if (GTK_IS_COMBO_BOX_TEXT(combo))
-	{
+	if (GTK_IS_COMBO_BOX_TEXT(combo)) {
 		return gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo));
 	}
 
@@ -301,7 +278,7 @@ remmina_public_combo_get_active_text(GtkComboBox *combo)
 	return s;
 }
 
-void remmina_public_popup_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data)
+void remmina_public_popup_position(GtkMenu * menu, gint * x, gint * y, gboolean * push_in, gpointer user_data)
 {
 	TRACE_CALL("remmina_public_popup_position");
 	GtkWidget *widget;
@@ -309,8 +286,7 @@ void remmina_public_popup_position(GtkMenu *menu, gint *x, gint *y, gboolean *pu
 	GtkAllocation allocation;
 
 	widget = GTK_WIDGET(user_data);
-	if (gtk_widget_get_window(widget) == NULL)
-	{
+	if (gtk_widget_get_window(widget) == NULL) {
 		*x = 0;
 		*y = 0;
 		*push_in = TRUE;
@@ -325,9 +301,7 @@ void remmina_public_popup_position(GtkMenu *menu, gint *x, gint *y, gboolean *pu
 	 *
 	 * While leaving the previous check intact I'm checking also if the provided
 	 * widget is a GtkToggleToolButton and position the menu accordingly. */
-	if (gtk_widget_get_has_window(widget) ||
-	        g_strcmp0(gtk_widget_get_name(widget), "GtkToggleToolButton") == 0)
-	{
+	if (gtk_widget_get_has_window(widget) || g_strcmp0(gtk_widget_get_name(widget), "GtkToggleToolButton") == 0) {
 		tx += allocation.x;
 		ty += allocation.y;
 	}
@@ -337,8 +311,7 @@ void remmina_public_popup_position(GtkMenu *menu, gint *x, gint *y, gboolean *pu
 	*push_in = TRUE;
 }
 
-gchar*
-remmina_public_combine_path(const gchar *path1, const gchar *path2)
+gchar *remmina_public_combine_path(const gchar * path1, const gchar * path2)
 {
 	TRACE_CALL("remmina_public_combine_path");
 	if (!path1 || path1[0] == '\0')
@@ -348,23 +321,20 @@ remmina_public_combine_path(const gchar *path1, const gchar *path2)
 	return g_strdup_printf("%s/%s", path1, path2);
 }
 
-void remmina_public_get_server_port(const gchar *server, gint defaultport, gchar **host, gint *port)
+void remmina_public_get_server_port(const gchar * server, gint defaultport, gchar ** host, gint * port)
 {
 	TRACE_CALL("remmina_public_get_server_port");
 	gchar *str, *ptr, *ptr2;
 
 	str = g_strdup(server);
 
-	if (str)
-	{
+	if (str) {
 		/* [server]:port format */
 		ptr = strchr(str, '[');
-		if (ptr)
-		{
+		if (ptr) {
 			ptr++;
 			ptr2 = strchr(ptr, ']');
-			if (ptr2)
-			{
+			if (ptr2) {
 				*ptr2++ = '\0';
 				if (*ptr2 == ':')
 					defaultport = atoi(ptr2 + 1);
@@ -379,11 +349,9 @@ void remmina_public_get_server_port(const gchar *server, gint defaultport, gchar
 
 		/* server:port format, IPv6 cannot use this format */
 		ptr = strchr(str, ':');
-		if (ptr)
-		{
+		if (ptr) {
 			ptr2 = strchr(ptr + 1, ':');
-			if (ptr2 == NULL)
-			{
+			if (ptr2 == NULL) {
 				*ptr++ = '\0';
 				defaultport = atoi(ptr);
 			}
@@ -399,7 +367,7 @@ void remmina_public_get_server_port(const gchar *server, gint defaultport, gchar
 		*port = defaultport;
 }
 
-gboolean remmina_public_get_xauth_cookie(const gchar *display, gchar **msg)
+gboolean remmina_public_get_xauth_cookie(const gchar * display, gchar ** msg)
 {
 	TRACE_CALL("remmina_public_get_xauth_cookie");
 	gchar buf[200];
@@ -413,30 +381,24 @@ gboolean remmina_public_get_xauth_cookie(const gchar *display, gchar **msg)
 
 	g_snprintf(buf, sizeof(buf), "xauth list %s", display);
 	ret = g_spawn_command_line_sync(buf, &out, NULL, NULL, &error);
-	if (ret)
-	{
-		if ((ptr = g_strrstr(out, "MIT-MAGIC-COOKIE-1")) == NULL)
-		{
+	if (ret) {
+		if ((ptr = g_strrstr(out, "MIT-MAGIC-COOKIE-1")) == NULL) {
 			*msg = g_strdup_printf("xauth returns %s", out);
 			ret = FALSE;
-		}
-		else
-		{
+		} else {
 			ptr += 19;
 			while (*ptr == ' ')
 				ptr++;
 			*msg = g_strndup(ptr, 32);
 		}
 		g_free(out);
-	}
-	else
-	{
+	} else {
 		*msg = g_strdup(error->message);
 	}
 	return ret;
 }
 
-gint remmina_public_open_xdisplay(const gchar *disp)
+gint remmina_public_open_xdisplay(const gchar * disp)
 {
 	TRACE_CALL("remmina_public_open_xdisplay");
 	gchar *display;
@@ -447,21 +409,17 @@ gint remmina_public_open_xdisplay(const gchar *disp)
 
 	display = g_strdup(disp);
 	ptr = g_strrstr(display, ":");
-	if (ptr)
-	{
+	if (ptr) {
 		*ptr++ = '\0';
 		/* Assume you are using a local display... might need to implement remote display in the future */
-		if (display[0] == '\0' || strcmp(display, "unix") == 0)
-		{
+		if (display[0] == '\0' || strcmp(display, "unix") == 0) {
 			port = atoi(ptr);
 			sock = socket(AF_UNIX, SOCK_STREAM, 0);
-			if (sock >= 0)
-			{
+			if (sock >= 0) {
 				memset(&addr, 0, sizeof(addr));
 				addr.sun_family = AF_UNIX;
 				snprintf(addr.sun_path, sizeof(addr.sun_path), X_UNIX_SOCKET, port);
-				if (connect(sock, (struct sockaddr *) &addr, sizeof(addr)) == -1)
-				{
+				if (connect(sock, (struct sockaddr *) &addr, sizeof(addr)) == -1) {
 					close(sock);
 					sock = -1;
 				}
@@ -474,12 +432,12 @@ gint remmina_public_open_xdisplay(const gchar *disp)
 }
 
 /* This function was copied from GEdit (gedit-utils.c). */
-guint remmina_public_get_current_workspace(GdkScreen *screen)
+guint remmina_public_get_current_workspace(GdkScreen * screen)
 {
 	TRACE_CALL("remmina_public_get_current_workspace");
 #ifdef GDK_WINDOWING_X11
 #if GTK_CHECK_VERSION(3, 10, 0)
-	g_return_val_if_fail (GDK_IS_SCREEN (screen), 0);
+	g_return_val_if_fail(GDK_IS_SCREEN(screen), 0);
 	if (GDK_IS_X11_DISPLAY(gdk_screen_get_display(screen)))
 		return gdk_x11_screen_get_current_desktop(screen);
 	else
@@ -496,17 +454,17 @@ guint remmina_public_get_current_workspace(GdkScreen *screen)
 	gint err, result;
 	guint ret = 0;
 
-	g_return_val_if_fail (GDK_IS_SCREEN (screen), 0);
+	g_return_val_if_fail(GDK_IS_SCREEN(screen), 0);
 
-	root_win = gdk_screen_get_root_window (screen);
-	display = gdk_screen_get_display (screen);
+	root_win = gdk_screen_get_root_window(screen);
+	display = gdk_screen_get_display(screen);
 
-	gdk_error_trap_push ();
-	result = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (root_win),
-	                             gdk_x11_get_xatom_by_name_for_display (display, "_NET_CURRENT_DESKTOP"),
-	                             0, G_MAXLONG, False, XA_CARDINAL, &type, &format, &nitems,
-	                             &bytes_after, (gpointer) &current_desktop);
-	err = gdk_error_trap_pop ();
+	gdk_error_trap_push();
+	result = XGetWindowProperty(GDK_DISPLAY_XDISPLAY(display), GDK_WINDOW_XID(root_win),
+				    gdk_x11_get_xatom_by_name_for_display(display, "_NET_CURRENT_DESKTOP"),
+				    0, G_MAXLONG, False, XA_CARDINAL, &type, &format, &nitems,
+				    &bytes_after, (gpointer) & current_desktop);
+	err = gdk_error_trap_pop();
 
 	if (err != Success || result != Success)
 		return ret;
@@ -514,7 +472,7 @@ guint remmina_public_get_current_workspace(GdkScreen *screen)
 	if (type == XA_CARDINAL && format == 32 && nitems > 0)
 		ret = current_desktop[0];
 
-	XFree (current_desktop);
+	XFree(current_desktop);
 	return ret;
 #endif
 #else
@@ -525,15 +483,15 @@ guint remmina_public_get_current_workspace(GdkScreen *screen)
 }
 
 /* This function was copied from GEdit (gedit-utils.c). */
-guint remmina_public_get_window_workspace(GtkWindow *gtkwindow)
+guint remmina_public_get_window_workspace(GtkWindow * gtkwindow)
 {
 	TRACE_CALL("remmina_public_get_window_workspace");
 #ifdef GDK_WINDOWING_X11
 #if GTK_CHECK_VERSION(3, 10, 0)
 	GdkWindow *window;
-	g_return_val_if_fail (GTK_IS_WINDOW (gtkwindow), 0);
-	g_return_val_if_fail (gtk_widget_get_realized (GTK_WIDGET (gtkwindow)), 0);
-	window = gtk_widget_get_window (GTK_WIDGET (gtkwindow));
+	g_return_val_if_fail(GTK_IS_WINDOW(gtkwindow), 0);
+	g_return_val_if_fail(gtk_widget_get_realized(GTK_WIDGET(gtkwindow)), 0);
+	window = gtk_widget_get_window(GTK_WIDGET(gtkwindow));
 	if (GDK_IS_X11_DISPLAY(gdk_window_get_display(window)))
 		return gdk_x11_window_get_desktop(window);
 	else
@@ -549,18 +507,18 @@ guint remmina_public_get_window_workspace(GtkWindow *gtkwindow)
 	gint err, result;
 	guint ret = 0;
 
-	g_return_val_if_fail (GTK_IS_WINDOW (gtkwindow), 0);
-	g_return_val_if_fail (gtk_widget_get_realized (GTK_WIDGET (gtkwindow)), 0);
+	g_return_val_if_fail(GTK_IS_WINDOW(gtkwindow), 0);
+	g_return_val_if_fail(gtk_widget_get_realized(GTK_WIDGET(gtkwindow)), 0);
 
-	window = gtk_widget_get_window (GTK_WIDGET (gtkwindow));
-	display = gdk_window_get_display (window);
+	window = gtk_widget_get_window(GTK_WIDGET(gtkwindow));
+	display = gdk_window_get_display(window);
 
-	gdk_error_trap_push ();
-	result = XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
-	                             gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_DESKTOP"),
-	                             0, G_MAXLONG, False, XA_CARDINAL, &type, &format, &nitems,
-	                             &bytes_after, (gpointer) &workspace);
-	err = gdk_error_trap_pop ();
+	gdk_error_trap_push();
+	result = XGetWindowProperty(GDK_DISPLAY_XDISPLAY(display), GDK_WINDOW_XID(window),
+				    gdk_x11_get_xatom_by_name_for_display(display, "_NET_WM_DESKTOP"),
+				    0, G_MAXLONG, False, XA_CARDINAL, &type, &format, &nitems,
+				    &bytes_after, (gpointer) & workspace);
+	err = gdk_error_trap_pop();
 
 	if (err != Success || result != Success)
 		return ret;
@@ -568,7 +526,7 @@ guint remmina_public_get_window_workspace(GtkWindow *gtkwindow)
 	if (type == XA_CARDINAL && format == 32 && nitems > 0)
 		ret = workspace[0];
 
-	XFree (workspace);
+	XFree(workspace);
 	return ret;
 #endif
 #else
@@ -579,15 +537,14 @@ guint remmina_public_get_window_workspace(GtkWindow *gtkwindow)
 }
 
 /* Find hardware keycode for the requested keyval */
-guint16 remmina_public_get_keycode_for_keyval(GdkKeymap *keymap, guint keyval)
+guint16 remmina_public_get_keycode_for_keyval(GdkKeymap * keymap, guint keyval)
 {
 	TRACE_CALL("remmina_public_get_keycode_for_keyval")
 	GdkKeymapKey *keys = NULL;
 	gint length = 0;
 	guint16 keycode = 0;
 
-	if (gdk_keymap_get_entries_for_keyval(keymap, keyval, &keys, &length))
-	{
+	if (gdk_keymap_get_entries_for_keyval(keymap, keyval, &keys, &length)) {
 		keycode = keys[0].keycode;
 		g_free(keys);
 	}
@@ -595,10 +552,10 @@ guint16 remmina_public_get_keycode_for_keyval(GdkKeymap *keymap, guint keyval)
 }
 
 /* Check if the requested keycode is a key modifier */
-gboolean remmina_public_get_modifier_for_keycode(GdkKeymap *keymap, guint16 keycode)
+gboolean remmina_public_get_modifier_for_keycode(GdkKeymap * keymap, guint16 keycode)
 {
 	TRACE_CALL("remmina_public_get_modifier_for_keycode")
-	g_return_val_if_fail(keycode > 0, FALSE);
+	    g_return_val_if_fail(keycode > 0, FALSE);
 #ifdef GDK_WINDOWING_X11
 	return gdk_x11_keymap_key_is_modifier(keymap, keycode);
 #else
@@ -607,7 +564,7 @@ gboolean remmina_public_get_modifier_for_keycode(GdkKeymap *keymap, guint16 keyc
 }
 
 /* Load a GtkBuilder object from a filename */
-GtkBuilder* remmina_public_gtk_builder_new_from_file(gchar *filename)
+GtkBuilder *remmina_public_gtk_builder_new_from_file(gchar * filename)
 {
 	TRACE_CALL("remmina_public_gtk_builder_new_from_file")
 	gchar *ui_path = g_strconcat(REMMINA_UIDIR, G_DIR_SEPARATOR_S, filename, NULL);
@@ -623,17 +580,17 @@ GtkBuilder* remmina_public_gtk_builder_new_from_file(gchar *filename)
 
 /* Change parent container for a widget
  * If possible use this function instead of the deprecated gtk_widget_reparent */
-void remmina_public_gtk_widget_reparent(GtkWidget *widget, GtkContainer *container)
+void remmina_public_gtk_widget_reparent(GtkWidget * widget, GtkContainer * container)
 {
 	TRACE_CALL("remmina_public_gtk_widget_reparent")
-	g_object_ref(widget);
+	    g_object_ref(widget);
 	gtk_container_remove(GTK_CONTAINER(gtk_widget_get_parent(widget)), widget);
 	gtk_container_add(container, widget);
 	g_object_unref(widget);
 }
 
 /* Validate the inserted value for a new resolution */
-gboolean remmina_public_resolution_validation_func(const gchar *new_str, gchar **error)
+gboolean remmina_public_resolution_validation_func(const gchar * new_str, gchar ** error)
 {
 	TRACE_CALL("remmina_public_resolution_validation_func");
 	gint i;
@@ -645,29 +602,22 @@ gboolean remmina_public_resolution_validation_func(const gchar *new_str, gchar *
 	height = 0;
 	splitted = FALSE;
 	result = TRUE;
-	for (i = 0; new_str[i] != '\0'; i++)
-	{
-		if (new_str[i] == 'x')
-		{
-			if (splitted)
-			{
+	for (i = 0; new_str[i] != '\0'; i++) {
+		if (new_str[i] == 'x') {
+			if (splitted) {
 				result = FALSE;
 				break;
 			}
 			splitted = TRUE;
 			continue;
 		}
-		if (new_str[i] < '0' || new_str[i] > '9')
-		{
+		if (new_str[i] < '0' || new_str[i] > '9') {
 			result = FALSE;
 			break;
 		}
-		if (splitted)
-		{
+		if (splitted) {
 			height = 1;
-		}
-		else
-		{
+		} else {
 			width = 1;
 		}
 	}
@@ -681,42 +631,42 @@ gboolean remmina_public_resolution_validation_func(const gchar *new_str, gchar *
 }
 
 /* Used to send desktop notifications */
-void remmina_public_send_notification (const gchar *notification_id,
-		const gchar *notification_title, const gchar *notification_message)
+void remmina_public_send_notification(const gchar * notification_id,
+				      const gchar * notification_title, const gchar * notification_message)
 {
 	TRACE_CALL("remmina_public_send_notification");
 
-	GNotification *notification = g_notification_new (notification_title);
-	g_notification_set_body (notification, notification_message);
-	g_application_send_notification (g_application_get_default (), notification_id, notification);
-	g_object_unref (notification);
+	GNotification *notification = g_notification_new(notification_title);
+	g_notification_set_body(notification, notification_message);
+	g_application_send_notification(g_application_get_default(), notification_id, notification);
+	g_object_unref(notification);
 }
 
 /* Replaces all occurences of search in a new copy of string by replacement. */
-gchar* remmina_public_str_replace(const gchar *string, const gchar *search, const gchar *replacement)
+gchar *remmina_public_str_replace(const gchar * string, const gchar * search, const gchar * replacement)
 {
 	TRACE_CALL("remmina_public_str_replace")
 	gchar *str, **arr;
 
-	g_return_val_if_fail (string != NULL, NULL);
-	g_return_val_if_fail (search != NULL, NULL);
+	g_return_val_if_fail(string != NULL, NULL);
+	g_return_val_if_fail(search != NULL, NULL);
 
 	if (replacement == NULL)
 		replacement = "";
 
-	arr = g_strsplit (string, search, -1);
+	arr = g_strsplit(string, search, -1);
 	if (arr != NULL && arr[0] != NULL)
-		str = g_strjoinv (replacement, arr);
+		str = g_strjoinv(replacement, arr);
 	else
-		str = g_strdup (string);
+		str = g_strdup(string);
 
-	g_strfreev (arr);
+	g_strfreev(arr);
 	return str;
 }
 
 /* Replaces all occurences of search in a new copy of string by replacement
  * and overwrites the original string */
-gchar* remmina_public_str_replace_in_place(gchar *string, const gchar *search, const gchar *replacement)
+gchar *remmina_public_str_replace_in_place(gchar * string, const gchar * search, const gchar * replacement)
 {
 	TRACE_CALL("remmina_public_str_replace_in_place")
 	gchar *new_string = remmina_public_str_replace(string, search, replacement);
@@ -724,4 +674,3 @@ gchar* remmina_public_str_replace_in_place(gchar *string, const gchar *search, c
 	string = g_strdup(new_string);
 	return string;
 }
-

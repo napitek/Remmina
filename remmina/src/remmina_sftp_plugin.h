@@ -36,11 +36,7 @@
 #ifndef __REMMINASFTPPLUGIN_H__
 #define __REMMINASFTPPLUGIN_H__
 
-G_BEGIN_DECLS
-
-void remmina_sftp_plugin_register (void);
+G_BEGIN_DECLS void remmina_sftp_plugin_register(void);
 
 G_END_DECLS
-
-#endif /* __REMMINASFTPPLUGIN_H__ */
-
+#endif				/* __REMMINASFTPPLUGIN_H__ */

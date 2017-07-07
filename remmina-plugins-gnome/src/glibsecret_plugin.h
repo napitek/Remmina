@@ -42,4 +42,4 @@
 #include <glib.h>
 
 
-#endif // __BACKEND_LIBSECRET_H__
+#endif				// __BACKEND_LIBSECRET_H__

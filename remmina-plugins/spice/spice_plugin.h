@@ -38,21 +38,20 @@
 #include "common/remmina_plugin.h"
 #include <spice-client.h>
 #ifdef SPICE_GTK_CHECK_VERSION
-#  if SPICE_GTK_CHECK_VERSION(0, 31, 0)
-#    include <spice-client-gtk.h>
-#  else
-#    include <spice-widget.h>
-#    include <usb-device-widget.h>
-#  endif
+#if SPICE_GTK_CHECK_VERSION(0, 31, 0)
+#include <spice-client-gtk.h>
 #else
-#  include <spice-widget.h>
-#  include <usb-device-widget.h>
+#include <spice-widget.h>
+#include <usb-device-widget.h>
+#endif
+#else
+#include <spice-widget.h>
+#include <usb-device-widget.h>
 #endif
 
 #define GET_PLUGIN_DATA(gp) (RemminaPluginSpiceData*) g_object_get_data(G_OBJECT(gp), "plugin-data")
 
-typedef struct _RemminaPluginSpiceData
-{
+typedef struct _RemminaPluginSpiceData {
 	SpiceAudio *audio;
 	SpiceDisplay *display;
 	SpiceDisplayChannel *display_channel;
@@ -61,13 +60,13 @@ typedef struct _RemminaPluginSpiceData
 	SpiceSession *session;
 
 #ifdef SPICE_GTK_CHECK_VERSION
-#  if SPICE_GTK_CHECK_VERSION(0, 31, 0)
+#if SPICE_GTK_CHECK_VERSION(0, 31, 0)
 	/* key: SpiceFileTransferTask, value: RemminaPluginSpiceXferWidgets */
 	GHashTable *file_transfers;
-	GtkWidget  *file_transfer_dialog;
-#  endif /* SPICE_GTK_CHECK_VERSION(0, 31, 0) */
-#endif /* SPICE_GTK_CHECK_VERSION */
+	GtkWidget *file_transfer_dialog;
+#endif				/* SPICE_GTK_CHECK_VERSION(0, 31, 0) */
+#endif				/* SPICE_GTK_CHECK_VERSION */
 } RemminaPluginSpiceData;
 
 
-#endif /* __REMMINA_SPICE_PLUGIN_H__ */
+#endif				/* __REMMINA_SPICE_PLUGIN_H__ */

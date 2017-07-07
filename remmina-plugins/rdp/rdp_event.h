@@ -35,19 +35,14 @@
 #ifndef __REMMINA_RDP_EVENT_H__
 #define __REMMINA_RDP_EVENT_H__
 
-G_BEGIN_DECLS
-
-
-void remmina_rdp_event_init(RemminaProtocolWidget* gp);
-void remmina_rdp_event_uninit(RemminaProtocolWidget* gp);
-void remmina_rdp_event_update_scale(RemminaProtocolWidget* gp);
-void remmina_rdp_event_unfocus(RemminaProtocolWidget* gp);
-void remmina_rdp_event_update_rect(RemminaProtocolWidget* gp, gint x, gint y, gint w, gint h);
-void remmina_rdp_event_queue_ui_async(RemminaProtocolWidget* gp, RemminaPluginRdpUiObject* ui);
-int remmina_rdp_event_queue_ui_sync_retint(RemminaProtocolWidget* gp, RemminaPluginRdpUiObject* ui);
-void *remmina_rdp_event_queue_ui_sync_retptr(RemminaProtocolWidget* gp, RemminaPluginRdpUiObject* ui);
+G_BEGIN_DECLS void remmina_rdp_event_init(RemminaProtocolWidget * gp);
+void remmina_rdp_event_uninit(RemminaProtocolWidget * gp);
+void remmina_rdp_event_update_scale(RemminaProtocolWidget * gp);
+void remmina_rdp_event_unfocus(RemminaProtocolWidget * gp);
+void remmina_rdp_event_update_rect(RemminaProtocolWidget * gp, gint x, gint y, gint w, gint h);
+void remmina_rdp_event_queue_ui_async(RemminaProtocolWidget * gp, RemminaPluginRdpUiObject * ui);
+int remmina_rdp_event_queue_ui_sync_retint(RemminaProtocolWidget * gp, RemminaPluginRdpUiObject * ui);
+void *remmina_rdp_event_queue_ui_sync_retptr(RemminaProtocolWidget * gp, RemminaPluginRdpUiObject * ui);
 
 G_END_DECLS
-
 #endif
-

@@ -1,7 +1,7 @@
 /*
  * Remmina - The GTK+ Remote Desktop Client
  * Copyright (C) 2009-2010 Vic Lee
- * Copyright (C) 2014-2015 Antenore Gatta, Giovanni Panozzo
+ * Copyright (C) 2014-2017 Antenore Gatta, Giovanni Panozzo
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,14 +49,14 @@ static void wait_for_child(GPid pid, gint script_retval, gpointer data)
 {
 	PCon_Spinner *pcspinner = (PCon_Spinner *) data;
 
-	gtk_spinner_stop (GTK_SPINNER (pcspinner->spinner));
-	gtk_widget_destroy (GTK_WIDGET (pcspinner->dialog));
+	gtk_spinner_stop(GTK_SPINNER(pcspinner->spinner));
+	gtk_widget_destroy(GTK_WIDGET(pcspinner->dialog));
 	g_spawn_close_pid(pid);
 
 	g_free(pcspinner);
 }
 
-GtkDialog* remmina_plugin_cmdexec_new(RemminaFile* remminafile, const char *remmina_plugin_cmdexec_type)
+GtkDialog *remmina_plugin_cmdexec_new(RemminaFile * remminafile, const char *remmina_plugin_cmdexec_type)
 {
 	TRACE_CALL("remmina_plugin_cmdexec_new");
 	GtkBuilder *builder;
@@ -72,17 +72,14 @@ GtkDialog* remmina_plugin_cmdexec_new(RemminaFile* remminafile, const char *remm
 	strcpy(pre, "precommand");
 	strcpy(post, "postcommand");
 
-	if (remmina_plugin_cmdexec_type != NULL && (
-				strcmp(remmina_plugin_cmdexec_type, pre) |
-				strcmp(remmina_plugin_cmdexec_type, post) ))
-	{
+	if (remmina_plugin_cmdexec_type != NULL && (strcmp(remmina_plugin_cmdexec_type, pre) |
+						    strcmp(remmina_plugin_cmdexec_type, post))) {
 		plugin_cmd = remmina_file_get_string(remminafile, remmina_plugin_cmdexec_type);
-	}else{
+	} else {
 		return FALSE;
 	}
 
-	if (plugin_cmd != NULL)
-	{
+	if (plugin_cmd != NULL) {
 		cmd = g_shell_quote(remmina_file_get_string(remminafile, remmina_plugin_cmdexec_type));
 		pcspinner = g_new(PCon_Spinner, 1);
 		builder = remmina_public_gtk_builder_new_from_file("remmina_spinner.glade");
@@ -100,31 +97,26 @@ GtkDialog* remmina_plugin_cmdexec_new(RemminaFile* remminafile, const char *remm
 #endif
 		g_shell_parse_argv(cmd, NULL, &argv, &error);
 
-		if (error)
-		{
-			g_warning ("%s\n", error->message);
+		if (error) {
+			g_warning("%s\n", error->message);
 			g_error_free(error);
 		}
 
-		/* Consider using G_SPAWN_SEARCH_PATH_FROM_ENVP (from glib 2.38)*/
-		g_spawn_async(	NULL,                      // cwd
-		                argv,                      // argv
-		                NULL,                      // envp
-		                G_SPAWN_SEARCH_PATH |
-		                G_SPAWN_DO_NOT_REAP_CHILD, // flags
-		                NULL,                      // child_setup
-		                NULL,                      // child_setup user data
-		                &child_pid,                // exit status
-		                &error);                   // error
-		if (!error)
-		{
-			gtk_spinner_start (GTK_SPINNER (pcspinner->spinner));
-			g_child_watch_add (child_pid, wait_for_child, (gpointer) pcspinner);
+		/* Consider using G_SPAWN_SEARCH_PATH_FROM_ENVP (from glib 2.38) */
+		g_spawn_async(NULL,	// cwd
+			      argv,	// argv
+			      NULL,	// envp
+			      G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,	// flags
+			      NULL,	// child_setup
+			      NULL,	// child_setup user data
+			      &child_pid,	// exit status
+			      &error);	// error
+		if (!error) {
+			gtk_spinner_start(GTK_SPINNER(pcspinner->spinner));
+			g_child_watch_add(child_pid, wait_for_child, (gpointer) pcspinner);
 			gtk_dialog_run(pcspinner->dialog);
-		}
-		else
-		{
-			g_warning ("%s\n", error->message);
+		} else {
+			g_warning("%s\n", error->message);
 			g_error_free(error);
 		}
 		g_strfreev(argv);

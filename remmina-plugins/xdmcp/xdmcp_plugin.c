@@ -35,20 +35,16 @@
 
 #include "common/remmina_plugin.h"
 #if GTK_VERSION == 3
-#  include <gtk/gtkx.h>
+#include <gtk/gtkx.h>
 #endif
 
 INCLUDE_GET_AVAILABLE_XDISPLAY
-
 #define REMMINA_PLUGIN_XDMCP_FEATURE_TOOL_SENDCTRLALTDEL 1
-
 #define GET_PLUGIN_DATA(gp) (RemminaPluginXdmcpData*) g_object_get_data(G_OBJECT(gp), "plugin-data");
-
 /* Forward declaration */
 static RemminaProtocolPlugin remmina_plugin_xdmcp;
 
-typedef struct _RemminaPluginXdmcpData
-{
+typedef struct _RemminaPluginXdmcpData {
 	GtkWidget *socket;
 	gint socket_id;
 	GPid pid;
@@ -64,7 +60,7 @@ typedef struct _RemminaPluginXdmcpData
 static RemminaPluginService *remmina_plugin_service = NULL;
 
 
-static void remmina_plugin_xdmcp_on_plug_added(GtkSocket *socket, RemminaProtocolWidget *gp)
+static void remmina_plugin_xdmcp_on_plug_added(GtkSocket * socket, RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_on_plug_added");
 	RemminaPluginXdmcpData *gpdata = GET_PLUGIN_DATA(gp);
@@ -73,13 +69,13 @@ static void remmina_plugin_xdmcp_on_plug_added(GtkSocket *socket, RemminaProtoco
 	gpdata->ready = TRUE;
 }
 
-static void remmina_plugin_xdmcp_on_plug_removed(GtkSocket *socket, RemminaProtocolWidget *gp)
+static void remmina_plugin_xdmcp_on_plug_removed(GtkSocket * socket, RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_on_plug_removed");
 	remmina_plugin_service->protocol_plugin_close_connection(gp);
 }
 
-static gboolean remmina_plugin_xdmcp_start_xephyr(RemminaProtocolWidget *gp)
+static gboolean remmina_plugin_xdmcp_start_xephyr(RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_start_xephyr");
 	RemminaPluginXdmcpData *gpdata = GET_PLUGIN_DATA(gp);
@@ -94,9 +90,9 @@ static gboolean remmina_plugin_xdmcp_start_xephyr(RemminaProtocolWidget *gp)
 	remminafile = remmina_plugin_service->protocol_plugin_get_file(gp);
 
 	gpdata->display = remmina_get_available_xdisplay();
-	if (gpdata->display == 0)
-	{
-		remmina_plugin_service->protocol_plugin_set_error(gp, _("Run out of available local X display number."));
+	if (gpdata->display == 0) {
+		remmina_plugin_service->protocol_plugin_set_error(gp,
+								  _("Run out of available local X display number."));
 		return FALSE;
 	}
 
@@ -114,50 +110,43 @@ static gboolean remmina_plugin_xdmcp_start_xephyr(RemminaProtocolWidget *gp)
 	 * As a workaround, a "Default" color depth will not add the -screen argument.
 	 */
 	i = remmina_plugin_service->file_get_int(remminafile, "colordepth", 8);
-	if (i >= 8)
-	{
+	if (i >= 8) {
 		argv[argc++] = g_strdup("-screen");
 		argv[argc++] = g_strdup_printf("%ix%ix%i",
-				remmina_plugin_service->file_get_int(remminafile, "resolution_width", 640),
-				remmina_plugin_service->file_get_int(remminafile, "resolution_height", 480), i);
+					       remmina_plugin_service->file_get_int(remminafile, "resolution_width",
+										    640),
+					       remmina_plugin_service->file_get_int(remminafile, "resolution_height",
+										    480), i);
 	}
 
-	if (i == 2)
-	{
+	if (i == 2) {
 		argv[argc++] = g_strdup("-grayscale");
 	}
 
-	if (remmina_plugin_service->file_get_int(remminafile, "showcursor", FALSE))
-	{
+	if (remmina_plugin_service->file_get_int(remminafile, "showcursor", FALSE)) {
 		argv[argc++] = g_strdup("-host-cursor");
 	}
-	if (remmina_plugin_service->file_get_int(remminafile, "once", FALSE))
-	{
+	if (remmina_plugin_service->file_get_int(remminafile, "once", FALSE)) {
 		argv[argc++] = g_strdup("-once");
 	}
 	/* Listen on protocol TCP */
-	if (remmina_plugin_service->file_get_int(remminafile, "listen_on_tcp", FALSE))
-	{
+	if (remmina_plugin_service->file_get_int(remminafile, "listen_on_tcp", FALSE)) {
 		argv[argc++] = g_strdup("-listen");
 		argv[argc++] = g_strdup("tcp");
 	}
 
-	if (!remmina_plugin_service->file_get_int(remminafile, "ssh_enabled", FALSE))
-	{
-		remmina_plugin_service->get_server_port(remmina_plugin_service->file_get_string(remminafile, "server"), 0,
-				&host, &i);
+	if (!remmina_plugin_service->file_get_int(remminafile, "ssh_enabled", FALSE)) {
+		remmina_plugin_service->get_server_port(remmina_plugin_service->file_get_string(remminafile, "server"),
+							0, &host, &i);
 
 		argv[argc++] = g_strdup("-query");
 		argv[argc++] = host;
 
-		if (i)
-		{
+		if (i) {
 			argv[argc++] = g_strdup("-port");
 			argv[argc++] = g_strdup_printf("%i", i);
 		}
-	}
-	else
-	{
+	} else {
 		/* When the connection is through an SSH tunnel, it connects back to local unix socket,
 		 * so for security we can disable tcp listening */
 		argv[argc++] = g_strdup("-nolisten");
@@ -174,8 +163,7 @@ static gboolean remmina_plugin_xdmcp_start_xephyr(RemminaProtocolWidget *gp)
 	for (i = 0; i < argc; i++)
 		g_free(argv[i]);
 
-	if (!ret)
-	{
+	if (!ret) {
 		remmina_plugin_service->protocol_plugin_set_error(gp, "%s", error->message);
 		return FALSE;
 	}
@@ -183,8 +171,8 @@ static gboolean remmina_plugin_xdmcp_start_xephyr(RemminaProtocolWidget *gp)
 	return TRUE;
 }
 
-static gboolean remmina_plugin_xdmcp_tunnel_init_callback(RemminaProtocolWidget *gp, gint remotedisplay, const gchar *server,
-		gint port)
+static gboolean remmina_plugin_xdmcp_tunnel_init_callback(RemminaProtocolWidget * gp, gint remotedisplay,
+							  const gchar * server, gint port)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_tunnel_init_callback");
 	RemminaPluginXdmcpData *gpdata = GET_PLUGIN_DATA(gp);
@@ -199,19 +187,19 @@ static gboolean remmina_plugin_xdmcp_tunnel_init_callback(RemminaProtocolWidget 
 
 	remmina_plugin_service->protocol_plugin_set_display(gp, gpdata->display);
 
-	if (remmina_plugin_service->file_get_string(remminafile, "exec"))
-	{
-		return remmina_plugin_service->protocol_plugin_ssh_exec(gp, FALSE, "DISPLAY=localhost:%i.0 %s", remotedisplay,
-				remmina_plugin_service->file_get_string(remminafile, "exec"));
-	}
-	else
-	{
+	if (remmina_plugin_service->file_get_string(remminafile, "exec")) {
+		return remmina_plugin_service->protocol_plugin_ssh_exec(gp, FALSE, "DISPLAY=localhost:%i.0 %s",
+									remotedisplay,
+									remmina_plugin_service->
+									file_get_string(remminafile, "exec"));
+	} else {
 		return remmina_plugin_service->protocol_plugin_ssh_exec(gp, TRUE,
-				"xqproxy -display %i -host %s -port %i -query -manage", remotedisplay, server, port);
+									"xqproxy -display %i -host %s -port %i -query -manage",
+									remotedisplay, server, port);
 	}
 }
 
-static gboolean remmina_plugin_xdmcp_main(RemminaProtocolWidget *gp)
+static gboolean remmina_plugin_xdmcp_main(RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_main");
 	RemminaPluginXdmcpData *gpdata = GET_PLUGIN_DATA(gp);
@@ -219,18 +207,14 @@ static gboolean remmina_plugin_xdmcp_main(RemminaProtocolWidget *gp)
 
 	remminafile = remmina_plugin_service->protocol_plugin_get_file(gp);
 
-	if (remmina_plugin_service->file_get_int(remminafile, "ssh_enabled", FALSE))
-	{
-		if (!remmina_plugin_service->protocol_plugin_start_xport_tunnel(gp, remmina_plugin_xdmcp_tunnel_init_callback))
-		{
+	if (remmina_plugin_service->file_get_int(remminafile, "ssh_enabled", FALSE)) {
+		if (!remmina_plugin_service->
+		    protocol_plugin_start_xport_tunnel(gp, remmina_plugin_xdmcp_tunnel_init_callback)) {
 			gpdata->thread = 0;
 			return FALSE;
 		}
-	}
-	else
-	{
-		if (!remmina_plugin_xdmcp_start_xephyr(gp))
-		{
+	} else {
+		if (!remmina_plugin_xdmcp_start_xephyr(gp)) {
 			gpdata->thread = 0;
 			return FALSE;
 		}
@@ -240,21 +224,18 @@ static gboolean remmina_plugin_xdmcp_main(RemminaProtocolWidget *gp)
 	return TRUE;
 }
 
-static gpointer
-remmina_plugin_xdmcp_main_thread (gpointer data)
+static gpointer remmina_plugin_xdmcp_main_thread(gpointer data)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_main_thread");
-	pthread_setcancelstate (PTHREAD_CANCEL_ENABLE, NULL);
+	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
 
-	CANCEL_ASYNC
-	if (!remmina_plugin_xdmcp_main ((RemminaProtocolWidget*) data))
-	{
-		IDLE_ADD ((GSourceFunc) remmina_plugin_service->protocol_plugin_close_connection, data);
+	CANCEL_ASYNC if (!remmina_plugin_xdmcp_main((RemminaProtocolWidget *) data)) {
+		IDLE_ADD((GSourceFunc) remmina_plugin_service->protocol_plugin_close_connection, data);
 	}
 	return NULL;
 }
 
-static void remmina_plugin_xdmcp_init(RemminaProtocolWidget *gp)
+static void remmina_plugin_xdmcp_init(RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_init");
 	RemminaPluginXdmcpData *gpdata;
@@ -266,25 +247,26 @@ static void remmina_plugin_xdmcp_init(RemminaProtocolWidget *gp)
 	remmina_plugin_service->protocol_plugin_register_hostkey(gp, gpdata->socket);
 	gtk_widget_show(gpdata->socket);
 	g_signal_connect(G_OBJECT(gpdata->socket), "plug-added", G_CALLBACK(remmina_plugin_xdmcp_on_plug_added), gp);
-	g_signal_connect(G_OBJECT(gpdata->socket), "plug-removed", G_CALLBACK(remmina_plugin_xdmcp_on_plug_removed), gp);
+	g_signal_connect(G_OBJECT(gpdata->socket), "plug-removed", G_CALLBACK(remmina_plugin_xdmcp_on_plug_removed),
+			 gp);
 	gtk_container_add(GTK_CONTAINER(gp), gpdata->socket);
 
 }
 
 
 
-static gboolean remmina_plugin_xdmcp_open_connection(RemminaProtocolWidget *gp)
+static gboolean remmina_plugin_xdmcp_open_connection(RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_open_connection");
 	RemminaPluginXdmcpData *gpdata = GET_PLUGIN_DATA(gp);
 	RemminaFile *remminafile;
 	gint width, height;
 
-	if (!remmina_plugin_service->gtksocket_available())
-	{
-		remmina_plugin_service->protocol_plugin_set_error (gp,
-			_("Protocol %s is unavailable because GtkSocket only works under Xorg"),
-			remmina_plugin_xdmcp.name);
+	if (!remmina_plugin_service->gtksocket_available()) {
+		remmina_plugin_service->protocol_plugin_set_error(gp,
+								  _
+								  ("Protocol %s is unavailable because GtkSocket only works under Xorg"),
+								  remmina_plugin_xdmcp.name);
 		return FALSE;
 	}
 
@@ -298,40 +280,33 @@ static gboolean remmina_plugin_xdmcp_open_connection(RemminaProtocolWidget *gp)
 	gpdata->socket_id = gtk_socket_get_id(GTK_SOCKET(gpdata->socket));
 
 
-	if (remmina_plugin_service->file_get_int (remminafile, "ssh_enabled", FALSE))
-	{
-		if (pthread_create (&gpdata->thread, NULL, remmina_plugin_xdmcp_main_thread, gp))
-		{
-			remmina_plugin_service->protocol_plugin_set_error (gp,
-					"Failed to initialize pthread. Falling back to non-thread mode...");
+	if (remmina_plugin_service->file_get_int(remminafile, "ssh_enabled", FALSE)) {
+		if (pthread_create(&gpdata->thread, NULL, remmina_plugin_xdmcp_main_thread, gp)) {
+			remmina_plugin_service->protocol_plugin_set_error(gp,
+									  "Failed to initialize pthread. Falling back to non-thread mode...");
 			gpdata->thread = 0;
 			return FALSE;
-		}
-		else
-		{
+		} else {
 			return TRUE;
 		}
-	}
-	else
-	{
-		return remmina_plugin_xdmcp_main (gp);
+	} else {
+		return remmina_plugin_xdmcp_main(gp);
 	}
 
 }
 
-static gboolean remmina_plugin_xdmcp_close_connection(RemminaProtocolWidget *gp)
+static gboolean remmina_plugin_xdmcp_close_connection(RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_close_connection");
 	RemminaPluginXdmcpData *gpdata = GET_PLUGIN_DATA(gp);
 
-	if (gpdata->thread)
-	{
-		pthread_cancel (gpdata->thread);
-		if (gpdata->thread) pthread_join (gpdata->thread, NULL);
+	if (gpdata->thread) {
+		pthread_cancel(gpdata->thread);
+		if (gpdata->thread)
+			pthread_join(gpdata->thread, NULL);
 	}
 
-	if (gpdata->pid)
-	{
+	if (gpdata->pid) {
 		kill(gpdata->pid, SIGTERM);
 		g_spawn_close_pid(gpdata->pid);
 		gpdata->pid = 0;
@@ -343,41 +318,40 @@ static gboolean remmina_plugin_xdmcp_close_connection(RemminaProtocolWidget *gp)
 }
 
 /* Send CTRL+ALT+DEL keys keystrokes to the plugin socket widget */
-static void remmina_plugin_xdmcp_send_ctrlaltdel(RemminaProtocolWidget *gp)
+static void remmina_plugin_xdmcp_send_ctrlaltdel(RemminaProtocolWidget * gp)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_send_ctrlaltdel");
 	guint keys[] = { GDK_KEY_Control_L, GDK_KEY_Alt_L, GDK_KEY_Delete };
 	RemminaPluginXdmcpData *gpdata = GET_PLUGIN_DATA(gp);
 
 	remmina_plugin_service->protocol_plugin_send_keys_signals(gpdata->socket,
-		keys, G_N_ELEMENTS(keys), GDK_KEY_PRESS | GDK_KEY_RELEASE);
+								  keys, G_N_ELEMENTS(keys),
+								  GDK_KEY_PRESS | GDK_KEY_RELEASE);
 }
 
-static gboolean remmina_plugin_xdmcp_query_feature(RemminaProtocolWidget *gp, const RemminaProtocolFeature *feature)
+static gboolean remmina_plugin_xdmcp_query_feature(RemminaProtocolWidget * gp, const RemminaProtocolFeature * feature)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_query_feature");
 	return TRUE;
 }
 
-static void remmina_plugin_xdmcp_call_feature(RemminaProtocolWidget *gp, const RemminaProtocolFeature *feature)
+static void remmina_plugin_xdmcp_call_feature(RemminaProtocolWidget * gp, const RemminaProtocolFeature * feature)
 {
 	TRACE_CALL("remmina_plugin_xdmcp_call_feature");
 	RemminaFile *remminafile;
 
 	remminafile = remmina_plugin_service->protocol_plugin_get_file(gp);
-	switch (feature->id)
-	{
-		case REMMINA_PLUGIN_XDMCP_FEATURE_TOOL_SENDCTRLALTDEL:
-			remmina_plugin_xdmcp_send_ctrlaltdel(gp);
-			break;
-		default:
-			break;
+	switch (feature->id) {
+	case REMMINA_PLUGIN_XDMCP_FEATURE_TOOL_SENDCTRLALTDEL:
+		remmina_plugin_xdmcp_send_ctrlaltdel(gp);
+		break;
+	default:
+		break;
 	}
 }
 
 /* Array of key/value pairs for color depths */
-static gpointer colordepth_list[] =
-{
+static gpointer colordepth_list[] = {
 	"0", N_("Default"),
 	"2", N_("Grayscale"),
 	"8", N_("256 colors"),
@@ -395,51 +369,49 @@ static gpointer colordepth_list[] =
  * e) Values for REMMINA_PROTOCOL_SETTING_TYPE_SELECT or REMMINA_PROTOCOL_SETTING_TYPE_COMBO
  * f) Unused pointer
  */
-static const RemminaProtocolSetting remmina_plugin_xdmcp_basic_settings[] =
-{
-	{ REMMINA_PROTOCOL_SETTING_TYPE_SERVER, NULL, NULL, FALSE, NULL, NULL },
-	{ REMMINA_PROTOCOL_SETTING_TYPE_RESOLUTION, NULL, NULL, FALSE, NULL, NULL },
-	{ REMMINA_PROTOCOL_SETTING_TYPE_SELECT, "colordepth", N_("Color depth"), FALSE, colordepth_list, NULL },
-	{ REMMINA_PROTOCOL_SETTING_TYPE_TEXT, "exec", N_("Startup program"), FALSE, NULL, NULL },
-	{ REMMINA_PROTOCOL_SETTING_TYPE_CHECK, "showcursor", N_("Use local cursor"), FALSE, NULL, NULL },
-	{ REMMINA_PROTOCOL_SETTING_TYPE_CHECK, "once", N_("Disconnect after one session"), FALSE, NULL, NULL },
-	{ REMMINA_PROTOCOL_SETTING_TYPE_CHECK, "listen_on_tcp", N_("Listening connection on protocol TCP"), FALSE, NULL, NULL },
-	{ REMMINA_PROTOCOL_SETTING_TYPE_END, NULL, NULL, FALSE, NULL, NULL }
+static const RemminaProtocolSetting remmina_plugin_xdmcp_basic_settings[] = {
+	{REMMINA_PROTOCOL_SETTING_TYPE_SERVER, NULL, NULL, FALSE, NULL, NULL},
+	{REMMINA_PROTOCOL_SETTING_TYPE_RESOLUTION, NULL, NULL, FALSE, NULL, NULL},
+	{REMMINA_PROTOCOL_SETTING_TYPE_SELECT, "colordepth", N_("Color depth"), FALSE, colordepth_list, NULL},
+	{REMMINA_PROTOCOL_SETTING_TYPE_TEXT, "exec", N_("Startup program"), FALSE, NULL, NULL},
+	{REMMINA_PROTOCOL_SETTING_TYPE_CHECK, "showcursor", N_("Use local cursor"), FALSE, NULL, NULL},
+	{REMMINA_PROTOCOL_SETTING_TYPE_CHECK, "once", N_("Disconnect after one session"), FALSE, NULL, NULL},
+	{REMMINA_PROTOCOL_SETTING_TYPE_CHECK, "listen_on_tcp", N_("Listening connection on protocol TCP"), FALSE, NULL,
+	 NULL},
+	{REMMINA_PROTOCOL_SETTING_TYPE_END, NULL, NULL, FALSE, NULL, NULL}
 };
 
 /* Array for available features.
  * The last element of the array must be REMMINA_PROTOCOL_FEATURE_TYPE_END. */
-static const RemminaProtocolFeature remmina_plugin_xdmcp_features[] =
-{
-	{ REMMINA_PROTOCOL_FEATURE_TYPE_TOOL, REMMINA_PLUGIN_XDMCP_FEATURE_TOOL_SENDCTRLALTDEL, N_("Send Ctrl+Alt+Delete"), NULL, NULL },
-	{ REMMINA_PROTOCOL_FEATURE_TYPE_END, 0, NULL, NULL, NULL }
+static const RemminaProtocolFeature remmina_plugin_xdmcp_features[] = {
+	{REMMINA_PROTOCOL_FEATURE_TYPE_TOOL, REMMINA_PLUGIN_XDMCP_FEATURE_TOOL_SENDCTRLALTDEL,
+	 N_("Send Ctrl+Alt+Delete"), NULL, NULL},
+	{REMMINA_PROTOCOL_FEATURE_TYPE_END, 0, NULL, NULL, NULL}
 };
 
 /* Protocol plugin definition and features */
-static RemminaProtocolPlugin remmina_plugin_xdmcp =
-{
-	REMMINA_PLUGIN_TYPE_PROTOCOL,                 // Type
-	"XDMCP",                                      // Name
-	N_("XDMCP - X Remote Session"),               // Description
-	GETTEXT_PACKAGE,                              // Translation domain
-	VERSION,                                      // Version number
-	"remmina-xdmcp",                              // Icon for normal connection
-	"remmina-xdmcp-ssh",                          // Icon for SSH connection
-	remmina_plugin_xdmcp_basic_settings,          // Array for basic settings
-	NULL,                                         // Array for advanced settings
-	REMMINA_PROTOCOL_SSH_SETTING_TUNNEL,          // SSH settings type
-	remmina_plugin_xdmcp_features,                // Array for available features
-	remmina_plugin_xdmcp_init,                    // Plugin initialization
-	remmina_plugin_xdmcp_open_connection,         // Plugin open connection
-	remmina_plugin_xdmcp_close_connection,        // Plugin close connection
-	remmina_plugin_xdmcp_query_feature,           // Query for available features
-	remmina_plugin_xdmcp_call_feature,            // Call a feature
-	NULL,                                         // Send a keystroke
-	NULL										  // Screenshot
+static RemminaProtocolPlugin remmina_plugin_xdmcp = {
+	REMMINA_PLUGIN_TYPE_PROTOCOL,	// Type
+	"XDMCP",		// Name
+	N_("XDMCP - X Remote Session"),	// Description
+	GETTEXT_PACKAGE,	// Translation domain
+	VERSION,		// Version number
+	"remmina-xdmcp",	// Icon for normal connection
+	"remmina-xdmcp-ssh",	// Icon for SSH connection
+	remmina_plugin_xdmcp_basic_settings,	// Array for basic settings
+	NULL,			// Array for advanced settings
+	REMMINA_PROTOCOL_SSH_SETTING_TUNNEL,	// SSH settings type
+	remmina_plugin_xdmcp_features,	// Array for available features
+	remmina_plugin_xdmcp_init,	// Plugin initialization
+	remmina_plugin_xdmcp_open_connection,	// Plugin open connection
+	remmina_plugin_xdmcp_close_connection,	// Plugin close connection
+	remmina_plugin_xdmcp_query_feature,	// Query for available features
+	remmina_plugin_xdmcp_call_feature,	// Call a feature
+	NULL,			// Send a keystroke
+	NULL			// Screenshot
 };
 
-G_MODULE_EXPORT gboolean
-remmina_plugin_entry(RemminaPluginService *service)
+G_MODULE_EXPORT gboolean remmina_plugin_entry(RemminaPluginService * service)
 {
 	TRACE_CALL("remmina_plugin_entry");
 	remmina_plugin_service = service;
@@ -447,11 +419,9 @@ remmina_plugin_entry(RemminaPluginService *service)
 	bindtextdomain(GETTEXT_PACKAGE, REMMINA_LOCALEDIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 
-	if (!service->register_plugin((RemminaPlugin *) &remmina_plugin_xdmcp))
-	{
+	if (!service->register_plugin((RemminaPlugin *) & remmina_plugin_xdmcp)) {
 		return FALSE;
 	}
 
 	return TRUE;
 }
-

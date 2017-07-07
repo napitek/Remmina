@@ -51,7 +51,7 @@
 #include "remmina/remmina_trace_calls.h"
 
 
-static gboolean cb_closewidget(GtkWidget *widget, gpointer data)
+static gboolean cb_closewidget(GtkWidget * widget, gpointer data)
 {
 	TRACE_CALL("cb_closewidget");
 	/* The correct way to close a remmina_connection_window is to send
@@ -65,7 +65,7 @@ static gboolean cb_closewidget(GtkWidget *widget, gpointer data)
 void remmina_exec_exitremmina()
 {
 	TRACE_CALL("remmina_exec_exitremmina");
-	GtkWidget* widget = NULL;
+	GtkWidget *widget = NULL;
 
 	widget = remmina_widget_pool_find(REMMINA_TYPE_CONNECTION_WINDOW, NULL);
 
@@ -84,27 +84,23 @@ void remmina_exec_exitremmina()
 	g_application_quit(g_application_get_default());
 }
 
-void remmina_exec_command(RemminaCommandType command, const gchar* data)
+void remmina_exec_command(RemminaCommandType command, const gchar * data)
 {
 	TRACE_CALL("remmina_exec_command");
-	gchar* s1;
-	gchar* s2;
-	GtkWidget* widget;
-	GtkWindow* mainwindow;
-	GtkDialog* prefdialog;
-	RemminaEntryPlugin* plugin;
+	gchar *s1;
+	gchar *s2;
+	GtkWidget *widget;
+	GtkWindow *mainwindow;
+	GtkDialog *prefdialog;
+	RemminaEntryPlugin *plugin;
 
-	switch (command)
-	{
+	switch (command) {
 	case REMMINA_COMMAND_MAIN:
 		mainwindow = remmina_main_get_window();
-		if (mainwindow)
-		{
+		if (mainwindow) {
 			gtk_window_present(mainwindow);
 			gtk_window_deiconify(GTK_WINDOW(mainwindow));
-		}
-		else
-		{
+		} else {
 			widget = remmina_main_new();
 			gtk_widget_show(widget);
 		}
@@ -112,13 +108,10 @@ void remmina_exec_command(RemminaCommandType command, const gchar* data)
 
 	case REMMINA_COMMAND_PREF:
 		prefdialog = remmina_pref_dialog_get_dialog();
-		if (prefdialog)
-		{
+		if (prefdialog) {
 			gtk_window_present(GTK_WINDOW(prefdialog));
 			gtk_window_deiconify(GTK_WINDOW(prefdialog));
-		}
-		else
-		{
+		} else {
 			/* Create a new preference dialog */
 			widget = GTK_WIDGET(remmina_pref_dialog_new(atoi(data), NULL));
 			gtk_widget_show(widget);
@@ -127,16 +120,13 @@ void remmina_exec_command(RemminaCommandType command, const gchar* data)
 
 	case REMMINA_COMMAND_NEW:
 		s1 = (data ? strchr(data, ',') : NULL);
-		if (s1)
-		{
+		if (s1) {
 			s1 = g_strdup(data);
 			s2 = strchr(s1, ',');
 			*s2++ = '\0';
 			widget = remmina_file_editor_new_full(s2, s1);
 			g_free(s1);
-		}
-		else
-		{
+		} else {
 			widget = remmina_file_editor_new_full(NULL, data);
 		}
 		gtk_widget_show(widget);
@@ -158,13 +148,10 @@ void remmina_exec_command(RemminaCommandType command, const gchar* data)
 
 	case REMMINA_COMMAND_VERSION:
 		mainwindow = remmina_main_get_window();
-		if (mainwindow)
-		{
+		if (mainwindow) {
 			remmina_about_open(NULL);
-		}
-		else
-		{
-			g_print ("%s - Version %s (git %s)\n", g_get_application_name (), VERSION, REMMINA_GIT_REVISION);
+		} else {
+			g_print("%s - Version %s (git %s)\n", g_get_application_name(), VERSION, REMMINA_GIT_REVISION);
 			/* As we do not use the "handle-local-options" signal, we have to exit Remmina */
 			remmina_exec_command(REMMINA_COMMAND_EXIT, NULL);
 		}
@@ -173,14 +160,12 @@ void remmina_exec_command(RemminaCommandType command, const gchar* data)
 
 	case REMMINA_COMMAND_FULL_VERSION:
 		mainwindow = remmina_main_get_window();
-		if (mainwindow)
-		{
+		if (mainwindow) {
 			/* Show th widget with the list of plugins and versions */
 			remmina_plugin_manager_show(mainwindow);
-		}
-		else
-		{
-			g_print("\n%s - Version %s (git %s)\n\n", g_get_application_name (), VERSION, REMMINA_GIT_REVISION);
+		} else {
+			g_print("\n%s - Version %s (git %s)\n\n", g_get_application_name(), VERSION,
+				REMMINA_GIT_REVISION);
 
 			remmina_plugin_manager_show_stdout();
 			remmina_exec_command(REMMINA_COMMAND_EXIT, NULL);
@@ -190,15 +175,12 @@ void remmina_exec_command(RemminaCommandType command, const gchar* data)
 
 
 	case REMMINA_COMMAND_PLUGIN:
-		plugin = (RemminaEntryPlugin*) remmina_plugin_manager_get_plugin(REMMINA_PLUGIN_TYPE_ENTRY, data);
-		if (plugin)
-		{
+		plugin = (RemminaEntryPlugin *) remmina_plugin_manager_get_plugin(REMMINA_PLUGIN_TYPE_ENTRY, data);
+		if (plugin) {
 			plugin->entry_func();
-		}
-		else
-		{
+		} else {
 			widget = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
-			                                _("Plugin %s is not registered."), data);
+							_("Plugin %s is not registered."), data);
 			g_signal_connect(G_OBJECT(widget), "response", G_CALLBACK(gtk_widget_destroy), NULL);
 			gtk_widget_show(widget);
 			remmina_widget_pool_register(widget);
@@ -213,4 +195,3 @@ void remmina_exec_command(RemminaCommandType command, const gchar* data)
 		break;
 	}
 }
-

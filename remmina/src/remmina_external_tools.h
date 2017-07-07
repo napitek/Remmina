@@ -40,11 +40,8 @@
 #include "remmina_main.h"
 
 G_BEGIN_DECLS
-
 /* Open a new connection window for a .remmina file */
-gboolean remmina_external_tools_from_filename(RemminaMain *remminamain, gchar* filename);
+    gboolean remmina_external_tools_from_filename(RemminaMain * remminamain, gchar * filename);
 
 G_END_DECLS
-
-#endif  /* __REMMINAEXTERNALTOOLS_H__  */
-
+#endif				/* __REMMINAEXTERNALTOOLS_H__  */

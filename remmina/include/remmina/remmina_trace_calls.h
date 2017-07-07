@@ -49,7 +49,7 @@
 }
 
 #else
-#define TRACE_CALL(text) 
-#endif  /* _WITH_TRACE_CALLS_ */
+#define TRACE_CALL(text)
+#endif				/* _WITH_TRACE_CALLS_ */
 
-#endif  /* __REMMINATRACECALLS_H__  */
+#endif				/* __REMMINATRACECALLS_H__  */
